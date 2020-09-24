@@ -12,7 +12,11 @@ export default class Spreadsheet {
 
   constructor() {
     //@TODO
-      this.cell = new CellInfo();
+      this.cells = [];
+      
+      this.graph = new DAG();
+      this.adjList = this.graph.getAdjList();
+      
   }
     
 
@@ -29,18 +33,20 @@ export default class Spreadsheet {
     const updates = {};
     //@TODO
 	let ast= parse(expr, baseCellId);
-      let val = this.eval1(ast)
-      this.cell.id = baseCellId;
-      this.cell.expr = expr;
-      this.cell.value = val;
-      this.cell.dependents[baseCellId] = val;
-      this.cell.ast = ast;
-	console.log(inspect(ast, false, Infinity));
+      //console.log(inspect(ast, false, Infinity));
       
+      
+      let val = this.eval1(ast, baseCellId);
+      
+      let newcell = new CellInfo();
+      newcell.id = baseCellId;
+      newcell.expr = expr;
+      newcell.value = val;
+      newcell.dependents ;
+      newcell.ast = ast;
+      
+      this.cells.push(newcell);
      
-     // updates.push({baseCellId: this.eval1(ast)});
-     console.log(baseCellId + ":" + val)
-      
       
       updates[baseCellId] = val;
     return updates;
@@ -48,31 +54,32 @@ export default class Spreadsheet {
   }
 
   //@TODO add methods
-   eval1(ast){
+   eval1(ast, baseCellId){
 	var retval= 0;
-       let refarray = [];
+       
 	switch(ast.type){
         case 'num' :
-            if(ast.fn !== null){
-                let str = ast.fn;
-                console.log(FNS.str);
-            }
-            else{
-                retval = retval + ast.value;
-            }
+            retval = retval + ast.value;
         break;
         
         case 'app' :
+            let refarray = [];
             
-            if (ast.type === 'num'){
-                    retArray.push(x.value);
-                }
-//                else if(x.type === 'ref'){
-//                    refdata = cellRefToCellId;
-
-               // }
+            if(ast.kids.length === 1){
+                refarray.push(0);
+                if(ast.kids[0] != null) refarray.push(this.eval1(ast.kids[0], baseCellId));
+            }
+            else{
+            if(ast.kids[0] != null) refarray.push(this.eval1(ast.kids[0], baseCellId));
+            if(ast.kids[1] != null) refarray.push(this.eval1(ast.kids[1], baseCellId));
+            }
+            
+            retval = retval + refarray.reduce(FNS[ast.fn]);
             
             break;
+        
+        case 'ref' :
+            
         
         default:
             retval= 0;
@@ -81,6 +88,7 @@ export default class Spreadsheet {
 	return retval;
 
 	}
+    
 }
 
 //Map fn property of Ast type === 'app' to corresponding function.
@@ -101,11 +109,12 @@ class CellInfo{
     this.id = '';
     this.expr = '';
     this.value = 0;
-    this.dependents = {};
+    this.dependents = new Set();
     this.ast = null;
-}
+        
+    }
 
-};
+}
 
 class DAG {
     
@@ -118,7 +127,19 @@ class DAG {
     }
     
     addEdge(v,u){
-        this.adj.get(v).push(u);
+        if(typeof w != "undefined")  this.adj.get(v).push(u);
+    }
+    
+    update(v, w){
+        if(typeof w != "undefined"){
+            for(var i = 0; i<this.adj.length; i++){
+                if(this.adj.at(i) === v) {
+                    this.adj.set(i, w);
+                }
+                 
+            }
+           
+        }
     }
     
     depthFirstSearch(node){
@@ -128,26 +149,13 @@ class DAG {
     }
     
     getAdjList(){
-        return adj;
-    }
-    
-    print(){
-        var dag = this.adj.keys();
-        for( var i in dag){
-            var val = this.adj.get(i);
-            var conc = "";
-            
-            for(var j in val){
-                conc += j + " ";
-            }
-            console.log(i + " -> " + conc);
-        }
+        return this.adj;
     }
     
     dfsHelper(node, visited){
         visited[node] = true;
         
-        var adjNode = this.adj.get(node);
+        var adjNode = this.adj[node];
         
         for(var i in adjNode){
             var nNode = adjNode(i);
