@@ -46,15 +46,20 @@ export default class MemSpreadsheet {
   /** return object containing formula and value for cell cellId 
    *  return { value: 0, formula: '' } for an empty cell.
    */
-  query(cellId) {
+    query(cellId) {
     //@TODO
-    return { };
+      const cell = this._cells[cellId];
+      if(!cell){
+          return { value: 0, formula: '' };
+      }
+      return { value: cell.value, formula: cell.formula};
   }
 
-  /** Clear contents of this spreadsheet. No undo information recorded. */
+  /** Clear contents of this spreadsheet. No undo recorded. */
   clear() {
     this._undos = {};
     //@TODO
+      this._cells = {};
   }
 
   /** Delete all info for cellId from this spreadsheet. Return an
@@ -65,7 +70,11 @@ export default class MemSpreadsheet {
     this._undos = {};
     const results = {};
     //@TODO
-    return results;
+      
+      const formula = this._cells[cellId].formula;
+      this._updateCell(cellId, cell => delete this._cells[cellId]);
+      
+      return this.eval(cellId, fomula);
   }
 
   /** copy formula from srcCellId to destCellId, adjusting any
@@ -77,6 +86,13 @@ export default class MemSpreadsheet {
     this._undos = {};
     const results = {};
     //@TODO
+      if(this._cells[srcCellId].empty()){
+          delete this._cells[destCellId];
+      }
+          const srcAst = this._cells[srcCellId].ast;
+          const destFormula = srcAst.toString(destCellId);
+          results = this.eval(destCellId, destFormula);
+      
     return results;
   }
 
@@ -105,6 +121,7 @@ export default class MemSpreadsheet {
   dump() {
     const prereqs = this._makePrereqs();
     //@TODO
+      
     return [];
   }
 

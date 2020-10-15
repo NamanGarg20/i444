@@ -21,22 +21,34 @@ const MONGO_CONNECT_OPTIONS = { useUnifiedTopology: true };
  *  `DB`: database error.
  */
 
-export default class PersistentSpreadsheet {
+export default class PersistentSpreadsheet extends MemSpreadsheet{
 
   //factory method
   static async make(dbUrl, spreadsheetName) {
     try {
       //@TODO set up database info, including reading data
+        const client = await mongo.connect(dbUrl, MONGO_CONNECT_OPTIONS);
+        const db = client.db(spreadsheetName);
+        //const collection = db.collection(spreadsheetName);
+       //await listDatabases(client);
+       //const collection1 = db.collections('users');
+       console.log(db);
+
     }
     catch (err) {
       const msg = `cannot connect to URL "${dbUrl}": ${err}`;
       throw new AppError('DB', msg);
     }
-    return new PersistentSpreadsheet(/* @TODO params */);
+    return new PersistentSpreadsheet(client, db);
   }
 
-  constructor(/* @TODO params */) {
+  constructor(client, db) {
     //@TODO
+      this.client = client;
+      this.db = db;
+      this.collection = db.collection('spreadsheet');
+      this.MemSpreadsheet = new MemSpreadsheet();
+      
   }
 
   /** Release all resources held by persistent spreadsheet.
@@ -44,7 +56,14 @@ export default class PersistentSpreadsheet {
    */
   async close() {
     //@TODO
-  }
+      try {
+          await this.client.close();
+        }
+        catch (err) {
+          throw new AppError('DB', err.toString());
+        }
+      }
+  
 
   /** Set cell with id baseCellId to result of evaluating string
    *  formula.  Update all cells which are directly or indirectly
@@ -52,12 +71,20 @@ export default class PersistentSpreadsheet {
    *  of all dependent cells to their updated values.
    */
   async eval(baseCellId, formula) {
-    const results = /* @TODO delegate to in-memory spreadsheet */ {}; 
+      const results = /* @TODO delegate to in-memory spreadsheet */{};
+       this.MemSpreadsheet.eval(baseCellId, formula);
     try {
       //@TODO
+        const zz = await this.find(category, {id:obj.id});
+        //console.log(zz)
+        //console.log(zz[0].id);
+        results._id = results.id;
+        await this.collection.insertOne(results);
+        
     }
     catch (err) {
       //@TODO undo mem-spreadsheet operation
+        MemSpreadsheet.prototype.undo();
       const msg = `cannot update "${baseCellId}: ${err}`;
       throw new AppError('DB', msg);
     }
@@ -68,19 +95,25 @@ export default class PersistentSpreadsheet {
    *  return { value: 0, formula: '' } for an empty cell.
    */
   async query(cellId) {
-    return /* @TODO delegate to in-memory spreadsheet */ {}; 
+      return  this.MemSpreadsheet.query(cellId);
+      /* @TODO delegate to in-memory spreadsheet */
   }
 
   /** Clear contents of this spreadsheet */
   async clear() {
     try {
       //@TODO
+        console.log("clear");
+        await this.db.dropDatabase();
+        
+        await this.collection.deleteMany({});
     }
     catch (err) {
       const msg = `cannot drop collection ${this.spreadsheetName}: ${err}`;
       throw new AppError('DB', msg);
     }
     /* @TODO delegate to in-memory spreadsheet */
+      this.MemSpreadsheet.clear();
   }
 
   /** Delete all info for cellId from this spreadsheet. Return an
@@ -89,12 +122,19 @@ export default class PersistentSpreadsheet {
    */
   async delete(cellId) {
     let results;
-    results = /* @TODO delegate to in-memory spreadsheet */ {}; 
+    results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.delete(cellId);
+      console.log(results);
     try {
       //@TODO
+        //const db = this.client.db(this.dbName)
+        //console.log(obj);
+        //const zz = await this.find(category, {id:results.id});
+        //console.log(zz)
+        //console.log(zz[0].id);
     }
     catch (err) {
       //@TODO undo mem-spreadsheet operation
+        this.MemSpreadsheet.undo();
       const msg = `cannot delete ${cellId}: ${err}`;
       throw new AppError('DB', msg);
     }
@@ -107,17 +147,18 @@ export default class PersistentSpreadsheet {
    *  an empty cell is equivalent to deleting the destination cell.
    */
   async copy(destCellId, srcCellId) {
-    const srcFormula = /* @TODO get formula by querying mem-spreadsheet */ '';
+    const srcFormula = /* @TODO get formula by querying mem-spreadsheet */ this.MemSpreadsheet.query(cellId);
     if (!srcFormula) {
       return await this.delete(destCellId);
     }
     else {
-      const results = /* @TODO delegate to in-memory spreadsheet */ {}; 
+        const results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.copy(destCellId, srcCellId);
       try {
 	//@TODO
       }
       catch (err) {
 	//@TODO undo mem-spreadsheet operation
+           this.MemSpreadsheet.undo();
 	const msg = `cannot update "${destCellId}: ${err}`;
 	throw new AppError('DB', msg);
       }
@@ -154,3 +195,4 @@ export default class PersistentSpreadsheet {
 }
 
 //@TODO auxiliary functions
+
