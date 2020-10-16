@@ -21,19 +21,21 @@ const MONGO_CONNECT_OPTIONS = { useUnifiedTopology: true };
  *  `DB`: database error.
  */
 
-export default class PersistentSpreadsheet extends MemSpreadsheet{
+export default class PersistentSpreadsheet{
+   
 
   //factory method
   static async make(dbUrl, spreadsheetName) {
+      'use strict';
+      let client
+      let db;
     try {
       //@TODO set up database info, including reading data
-        const client = await mongo.connect(dbUrl, MONGO_CONNECT_OPTIONS);
-        const db = client.db(spreadsheetName);
-        //const collection = db.collection(spreadsheetName);
-       //await listDatabases(client);
-       //const collection1 = db.collections('users');
-       console.log(db);
-
+       // const client = await mongo.connect(dbUrl, MONGO_CONNECT_OPTIONS);
+         client = await mongo.connect(dbUrl, MONGO_CONNECT_OPTIONS);
+         db = client.db(spreadsheetName);
+       // const db = client.db(spreadsheetName);
+        
     }
     catch (err) {
       const msg = `cannot connect to URL "${dbUrl}": ${err}`;
@@ -42,14 +44,14 @@ export default class PersistentSpreadsheet extends MemSpreadsheet{
     return new PersistentSpreadsheet(client, db);
   }
 
-  constructor(client, db) {
-    //@TODO
-      this.client = client;
-      this.db = db;
-      this.collection = db.collection('spreadsheet');
-      this.MemSpreadsheet = new MemSpreadsheet();
-      
-  }
+ constructor(client, db ) {
+       //@TODO
+         this.client = client;
+         this.db = db;
+     this.collection = this.db.collection('spreadsheet');
+         this.MemSpreadsheet = new MemSpreadsheet();
+         
+     }
 
   /** Release all resources held by persistent spreadsheet.
    *  Specifically, close any database connections.
@@ -71,20 +73,26 @@ export default class PersistentSpreadsheet extends MemSpreadsheet{
    *  of all dependent cells to their updated values.
    */
   async eval(baseCellId, formula) {
-      const results = /* @TODO delegate to in-memory spreadsheet */{};
+      const results = /* @TODO delegate to in-memory spreadsheet */
        this.MemSpreadsheet.eval(baseCellId, formula);
+      
     try {
       //@TODO
-        const zz = await this.find(category, {id:obj.id});
-        //console.log(zz)
-        //console.log(zz[0].id);
-        results._id = results.id;
-        await this.collection.insertOne(results);
+        if( !(await this.collection.findOne({"id": Object.keys(results)[0]})) ){
+          await this.collection.insertOne(results);
+            
+        }
+        else{
+          await this.collection.deleteOne({"id": Object.keys(results)[0]});
+          await this.collection.insertOne(results);
+           
+        }
+        console.log(this.query(baseCellId));
         
     }
     catch (err) {
       //@TODO undo mem-spreadsheet operation
-        MemSpreadsheet.prototype.undo();
+        this.MemSpreadsheet.undo();
       const msg = `cannot update "${baseCellId}: ${err}`;
       throw new AppError('DB', msg);
     }
@@ -106,7 +114,6 @@ export default class PersistentSpreadsheet extends MemSpreadsheet{
         console.log("clear");
         await this.db.dropDatabase();
         
-        await this.collection.deleteMany({});
     }
     catch (err) {
       const msg = `cannot drop collection ${this.spreadsheetName}: ${err}`;
@@ -125,12 +132,7 @@ export default class PersistentSpreadsheet extends MemSpreadsheet{
     results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.delete(cellId);
       console.log(results);
     try {
-      //@TODO
-        //const db = this.client.db(this.dbName)
-        //console.log(obj);
-        //const zz = await this.find(category, {id:results.id});
-        //console.log(zz)
-        //console.log(zz[0].id);
+      await this.collection.deleteOne({"id": results.id});
     }
     catch (err) {
       //@TODO undo mem-spreadsheet operation

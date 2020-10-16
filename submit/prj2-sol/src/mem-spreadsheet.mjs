@@ -122,8 +122,41 @@ export default class MemSpreadsheet {
     const prereqs = this._makePrereqs();
     //@TODO
       
-    return [];
+      
+    
   }
+    depth(){
+    var result = [];
+    var visited = [];
+    var temp = [];
+    for (var node in this._cells) {
+        if (!visited[node] && !temp[node]) {
+          topologicalSortHelper(node, visited, temp, result);
+        }
+      }
+      return result.reverse();
+    
+    
+}
+    topologicalSortHelper(node, visited, temp, result){
+           
+             temp[node] = true;
+        var neighbors = node.dependents;
+             for (var i = 0; i < neighbors.length; i += 1) {
+               var n = neighbors[i];
+               if (temp[n]) {
+                 throw new Error('The graph is not a DAG');
+               }
+               if (!visited[n]) {
+                 topologicalSortHelper(n, visited, temp, result);
+               }
+             }
+             temp[node] = false;
+             visited[node] = true;
+             result.push(node);
+           }
+        
+            
 
   /** undo all changes since last operation */
   undo() {
