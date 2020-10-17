@@ -67,14 +67,19 @@ export default class MemSpreadsheet {
    *  values.  
    */
   delete(cellId) {
-    this._undos = {};
-    const results = {};
-    //@TODO
+    //this._undos = {};
+    var results = {};
+      if(this._cells[cellId]!== undefined){
+      const cell = this._cells[cellId];
+      const formula = this._cells[cellId]?.formula;
+          var dependents = cell.dependents;
+      this._updateCell(this._cells[cellId], cell => delete this._cells[cellId]);
+          for(var node in dependents){
+             results = this.eval(this._cells[node.id], this._cells[node.id]?.formula);
+          }
+      }
       
-      const formula = this._cells[cellId].formula;
-      this._updateCell(cellId, cell => delete this._cells[cellId]);
-      
-      return this.eval(cellId, fomula);
+      return results;
   }
 
   /** copy formula from srcCellId to destCellId, adjusting any
@@ -84,14 +89,17 @@ export default class MemSpreadsheet {
    */
   copy(destCellId, srcCellId) {
     this._undos = {};
-    const results = {};
+    var results = {};
     //@TODO
-      if(this._cells[srcCellId].empty()){
-          delete this._cells[destCellId];
-      }
-          const srcAst = this._cells[srcCellId].ast;
-          const destFormula = srcAst.toString(destCellId);
+      
+      if(this._cells[srcCellId] !== undefined){
+         const srcAst = this._cells[srcCellId].ast;
+           const destFormula = srcAst.toString(destCellId);
+               
           results = this.eval(destCellId, destFormula);
+      }
+      
+      
       
     return results;
   }
@@ -122,38 +130,52 @@ export default class MemSpreadsheet {
     const prereqs = this._makePrereqs();
     //@TODO
       
+      var result = [];
+      var visited = [];
+      var indegree = [];
+      if(prereqs === {}) result = [];
+      
+      var depth = [];
+      
+      for (var node in prereqs) {
+          if(!this._cells[node].dependents){
+              depth[node] = 0;
+          }
+          depth[node] = (this._cells[node].dependents).length;
+        }
+      
+     
+          
+      for (var node in prereqs) {
+          
+      if (!visited[node] ) {
+          this.topologicalSortHelper(node, visited, result, depth);
+            }
+        }
       
     
+     
+      return  result;
+      
   }
-    depth(){
-    var result = [];
-    var visited = [];
-    var temp = [];
-    for (var node in this._cells) {
-        if (!visited[node] && !temp[node]) {
-          topologicalSortHelper(node, visited, temp, result);
-        }
-      }
-      return result.reverse();
     
-    
-}
-    topologicalSortHelper(node, visited, temp, result){
-           
-             temp[node] = true;
-        var neighbors = node.dependents;
+
+    topologicalSortHelper(node, visited, result, depth){
+        
+        var neighbors = [];
+        if(this._cells[node].dependents !== undefined)
+            neighbors = this._cells[node].dependents;
+       
              for (var i = 0; i < neighbors.length; i += 1) {
                var n = neighbors[i];
-               if (temp[n]) {
-                 throw new Error('The graph is not a DAG');
-               }
+               
                if (!visited[n]) {
-                 topologicalSortHelper(n, visited, temp, result);
+                 topologicalSortHelper(n, visited, result, depth);
                }
              }
-             temp[node] = false;
              visited[node] = true;
-             result.push(node);
+        result.push([node, this._cells[node].formula]);
+        result.sort( (a, b) => a[0].localeCompare(b[0]));
            }
         
             

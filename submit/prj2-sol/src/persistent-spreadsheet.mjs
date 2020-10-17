@@ -26,16 +26,15 @@ export default class PersistentSpreadsheet{
 
   //factory method
   static async make(dbUrl, spreadsheetName) {
-      'use strict';
+      
       let client
       let db;
     try {
       //@TODO set up database info, including reading data
-       // const client = await mongo.connect(dbUrl, MONGO_CONNECT_OPTIONS);
+      
          client = await mongo.connect(dbUrl, MONGO_CONNECT_OPTIONS);
          db = client.db(spreadsheetName);
-       // const db = client.db(spreadsheetName);
-        
+       
     }
     catch (err) {
       const msg = `cannot connect to URL "${dbUrl}": ${err}`;
@@ -50,6 +49,7 @@ export default class PersistentSpreadsheet{
          this.db = db;
      this.collection = this.db.collection('spreadsheet');
          this.MemSpreadsheet = new MemSpreadsheet();
+    
          
      }
 
@@ -78,16 +78,16 @@ export default class PersistentSpreadsheet{
       
     try {
       //@TODO
-        if( !(await this.collection.findOne({"id": Object.keys(results)[0]})) ){
-          await this.collection.insertOne(results);
+        
+       //     console.log(this.query(baseCellId));
+        if(this.collection.find({"id": Object.keys(results)})){
+        await this.collection.insertOne({"id": Object.keys(results)}, results);
             
         }
         else{
-          await this.collection.deleteOne({"id": Object.keys(results)[0]});
-          await this.collection.insertOne(results);
-           
+            await this.collection.deleteOne({"id": Object.keys(results)});
+            await this.collection.insertOne({"id": Object.keys(results)}, results);
         }
-        console.log(this.query(baseCellId));
         
     }
     catch (err) {
@@ -111,9 +111,10 @@ export default class PersistentSpreadsheet{
   async clear() {
     try {
       //@TODO
-        console.log("clear");
-        await this.db.dropDatabase();
-        
+        //console.log("clear");
+        await this.collection.deleteMany();
+       // await this.db.dropDatabase();
+        //this.i =0;
     }
     catch (err) {
       const msg = `cannot drop collection ${this.spreadsheetName}: ${err}`;
@@ -130,9 +131,11 @@ export default class PersistentSpreadsheet{
   async delete(cellId) {
     let results;
     results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.delete(cellId);
-      console.log(results);
+      //console.log(results);
     try {
-      await this.collection.deleteOne({"id": results.id});
+        if( await this.collection.find({"id": Object.keys(results)})){
+      await this.collection.deleteOne({"id": Object.keys(results)});;
+        }
     }
     catch (err) {
       //@TODO undo mem-spreadsheet operation
@@ -149,7 +152,7 @@ export default class PersistentSpreadsheet{
    *  an empty cell is equivalent to deleting the destination cell.
    */
   async copy(destCellId, srcCellId) {
-    const srcFormula = /* @TODO get formula by querying mem-spreadsheet */ this.MemSpreadsheet.query(cellId);
+    const srcFormula = /* @TODO get formula by querying mem-spreadsheet */ this.MemSpreadsheet.query(srcCellId);
     if (!srcFormula) {
       return await this.delete(destCellId);
     }
@@ -157,6 +160,7 @@ export default class PersistentSpreadsheet{
         const results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.copy(destCellId, srcCellId);
       try {
 	//@TODO
+          await this.collection.insertOne({"id": Object.keys(results)}, results);
       }
       catch (err) {
 	//@TODO undo mem-spreadsheet operation
@@ -191,7 +195,7 @@ export default class PersistentSpreadsheet{
    *  sort.
    */
   async dump() {
-    return /* @TODO delegate to in-memory spreadsheet */ []; 
+      return /* @TODO delegate to in-memory spreadsheet */this.MemSpreadsheet.dump();
   }
 
 }
