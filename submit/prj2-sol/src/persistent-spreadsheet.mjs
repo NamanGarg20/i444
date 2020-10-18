@@ -29,29 +29,45 @@ export default class PersistentSpreadsheet{
       
       let client
       let db;
-    try {
+      let collection;
+      let mem;
+      try {
       //@TODO set up database info, including reading data
-      
          client = await mongo.connect(dbUrl, MONGO_CONNECT_OPTIONS);
-         db = client.db(spreadsheetName);
-       
+         db = client.db();
+       collection = db.collection(spreadsheetName);
+          mem = await collection.find({}).toArray();
+        
     }
     catch (err) {
       const msg = `cannot connect to URL "${dbUrl}": ${err}`;
       throw new AppError('DB', msg);
     }
-    return new PersistentSpreadsheet(client, db);
+    return new PersistentSpreadsheet(client, db,collection, mem);
   }
 
- constructor(client, db ) {
+ constructor(client, db , collection, mem) {
        //@TODO
          this.client = client;
          this.db = db;
-     this.collection = this.db.collection('spreadsheet');
+     this.collection = collection;
+     this.cell = {};
          this.MemSpreadsheet = new MemSpreadsheet();
     
-         
+     var database = [];
+     for(var entry of mem){
+       var keys = Object.keys(entry);
+       var tempList = [];
+       tempList.push(keys[1]);
+       tempList.push(entry[keys[1]]);
+       database.push(tempList);
      }
+     for(var entry of database){
+       this.MemSpreadsheet.eval(entry[0],entry[1]);
+     }
+ }
+         
+     
 
   /** Release all resources held by persistent spreadsheet.
    *  Specifically, close any database connections.
@@ -74,20 +90,17 @@ export default class PersistentSpreadsheet{
    */
   async eval(baseCellId, formula) {
       const results = /* @TODO delegate to in-memory spreadsheet */
-       this.MemSpreadsheet.eval(baseCellId, formula);
+       await this.MemSpreadsheet.eval(baseCellId, formula);
       
     try {
       //@TODO
-        
-       //     console.log(this.query(baseCellId));
-        if(this.collection.find({"id": Object.keys(results)})){
-        await this.collection.insertOne({"id": Object.keys(results)}, results);
-            
-        }
-        else{
-            await this.collection.deleteOne({"id": Object.keys(results)});
-            await this.collection.insertOne({"id": Object.keys(results)}, results);
-        }
+
+        var ins = {};
+        ins[baseCellId] = formula;
+        this.cell[baseCellId] = ins;
+        const ret = await this.collection.insertOne(ins);
+       
+      // console.log(await this.collection.find(baseCellId).toArray());
         
     }
     catch (err) {
@@ -111,10 +124,8 @@ export default class PersistentSpreadsheet{
   async clear() {
     try {
       //@TODO
-        //console.log("clear");
         await this.collection.deleteMany();
-       // await this.db.dropDatabase();
-        //this.i =0;
+       
     }
     catch (err) {
       const msg = `cannot drop collection ${this.spreadsheetName}: ${err}`;
@@ -133,8 +144,9 @@ export default class PersistentSpreadsheet{
     results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.delete(cellId);
       //console.log(results);
     try {
-        if( await this.collection.find({"id": Object.keys(results)})){
-      await this.collection.deleteOne({"id": Object.keys(results)});;
+        var ins = this.cell[cellId];
+        if(ins !== undefined){
+        const retVal = await this.collection.deleteOne(ins);
         }
     }
     catch (err) {
@@ -159,8 +171,8 @@ export default class PersistentSpreadsheet{
     else {
         const results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.copy(destCellId, srcCellId);
       try {
-	//@TODO
-          await this.collection.insertOne({"id": Object.keys(results)}, results);
+          console.log(results);
+        
       }
       catch (err) {
 	//@TODO undo mem-spreadsheet operation
@@ -195,7 +207,7 @@ export default class PersistentSpreadsheet{
    *  sort.
    */
   async dump() {
-      return /* @TODO delegate to in-memory spreadsheet */this.MemSpreadsheet.dump();
+      return this.MemSpreadsheet.dump();
   }
 
 }

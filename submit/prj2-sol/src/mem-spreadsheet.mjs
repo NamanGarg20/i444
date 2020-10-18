@@ -67,17 +67,29 @@ export default class MemSpreadsheet {
    *  values.  
    */
   delete(cellId) {
-    //this._undos = {};
-    var results = {};
+    this._undos = {};
+   var results = {};
+      try{
+          var cell = {};
       if(this._cells[cellId]!== undefined){
-      const cell = this._cells[cellId];
-      const formula = this._cells[cellId]?.formula;
-          var dependents = cell.dependents;
-      this._updateCell(this._cells[cellId], cell => delete this._cells[cellId]);
-          for(var node in dependents){
-             results = this.eval(this._cells[node.id], this._cells[node.id]?.formula);
+          cell = this._cells[cellId];
+          this._updateCell(this._cells[cellId], cell => delete this._cells[cellId]);
+        }
+          if(cell !== {} && cell.dependents !== undefined){
+            
+            cell.dependents.forEach(cid => {
+                var formula = this._cells[cid].formula;
+              results = this.eval(cid,formula);
+              });
           }
       }
+      
+      catch (err) {
+        this.undo();
+        throw err;
+      }
+      
+      
       
       return results;
   }
@@ -91,16 +103,18 @@ export default class MemSpreadsheet {
     this._undos = {};
     var results = {};
     //@TODO
-      
-      if(this._cells[srcCellId] !== undefined){
-         const srcAst = this._cells[srcCellId].ast;
-           const destFormula = srcAst.toString(destCellId);
-               
-          results = this.eval(destCellId, destFormula);
+      var cell = this._cells[srcCellId];
+      var destFormula = "";
+      if((cell !== undefined) && (!cell.isEmpty())){
+        const srcAst = cell.ast;
+        destFormula = srcAst.toString(destCellId);
       }
-      
-      
-      
+      else{
+        results = this.delete(destCellId);
+      }
+      if(destFormula.length){
+        results = this.eval(destCellId,destFormula);
+      }
     return results;
   }
 
@@ -129,57 +143,36 @@ export default class MemSpreadsheet {
   dump() {
     const prereqs = this._makePrereqs();
     //@TODO
-      
       var result = [];
-      var visited = [];
-      var indegree = [];
-      if(prereqs === {}) result = [];
-      
-      var depth = [];
-      
-      for (var node in prereqs) {
-          if(!this._cells[node].dependents){
-              depth[node] = 0;
-          }
-          depth[node] = (this._cells[node].dependents).length;
-        }
-      
-     
-          
-      for (var node in prereqs) {
-          
-      if (!visited[node] ) {
-          this.topologicalSortHelper(node, visited, result, depth);
-            }
-        }
-      
-    
-     
-      return  result;
+      var queue = [];
+      var visited=[];
+      for(var node in prereqs){
+          if(prereqs[node].length === 0){
+            queue.push(this._cells[node]);
+                }
+      }
+       while(queue.length !== 0){
+          var next = [];
+                 queue = queue.sort((a, b) => a.id[0].localeCompare(b.id[0]));
+               for(var node of queue){
+                 if(node.dependents !== undefined){
+                   node.dependents.forEach(cellid =>{
+                       if(cellid!== undefined && !visited[node])
+                     next.push(this._cells[cellid]);
+                   });
+                 }
+                   if(!node.isEmpty()){
+                   result.push([node.id, node.formula]);
+                     visited[node] = true;
+                       }
+               }
+               queue = next;
+              }
+
+      return result;
       
   }
     
-
-    topologicalSortHelper(node, visited, result, depth){
-        
-        var neighbors = [];
-        if(this._cells[node].dependents !== undefined)
-            neighbors = this._cells[node].dependents;
-       
-             for (var i = 0; i < neighbors.length; i += 1) {
-               var n = neighbors[i];
-               
-               if (!visited[n]) {
-                 topologicalSortHelper(n, visited, result, depth);
-               }
-             }
-             visited[node] = true;
-        result.push([node, this._cells[node].formula]);
-        result.sort( (a, b) => a[0].localeCompare(b[0]));
-           }
-        
-            
-
   /** undo all changes since last operation */
   undo() {
     for (const [k, v] of Object.entries(this._undos)) {
