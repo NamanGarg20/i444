@@ -55,15 +55,13 @@ export default class PersistentSpreadsheet{
          this.MemSpreadsheet = new MemSpreadsheet();
     
      var database = [];
-     for(var entry of mem){
-       var keys = Object.keys(entry);
-       var tempList = [];
-       tempList.push(keys[1]);
-       tempList.push(entry[keys[1]]);
-       database.push(tempList);
+     for(var value of mem){
+       var keys = Object.keys(value);
+       
+       database.push([keys[1], value[keys[1]]]);
      }
-     for(var entry of database){
-       this.MemSpreadsheet.eval(entry[0],entry[1]);
+     for(var node of database){
+       this.MemSpreadsheet.eval(node[0],node[1]);
      }
  }
          
@@ -144,6 +142,7 @@ export default class PersistentSpreadsheet{
     results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.delete(cellId);
       //console.log(results);
     try {
+        
         var ins = this.cell[cellId];
         if(ins !== undefined){
         const retVal = await this.collection.deleteOne(ins);
@@ -171,7 +170,6 @@ export default class PersistentSpreadsheet{
     else {
         const results = /* @TODO delegate to in-memory spreadsheet */ this.MemSpreadsheet.copy(destCellId, srcCellId);
       try {
-          console.log(results);
         
       }
       catch (err) {
