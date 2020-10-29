@@ -46,16 +46,20 @@ const STORE = 'store';
 function setupRoutes(app) {
   app.use(cors(CORS_OPTIONS));  //needed for future projects
   //@TODO add routes to handlers
+<<<<<<< HEAD
     app.use(bodyParser.json());
     
     //must be last
     app.use(do404(app));
     app.use(doErrors(app));
+=======
+>>>>>>> e5ae8440faeb2f991d60e3a5d22c6af804568e65
 }
 
 /****************************** Handlers *******************************/
 
 //@TODO
+<<<<<<< HEAD
 function doGet(app) {
   return (async function(req, res) {
     try {
@@ -123,6 +127,8 @@ function doReplace(app) {
     }
   });
 }
+=======
+>>>>>>> e5ae8440faeb2f991d60e3a5d22c6af804568e65
 
 /** Default handler for when there is no route for a particular method
  *  and path.
