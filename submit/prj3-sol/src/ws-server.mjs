@@ -109,9 +109,8 @@ function doReplace(app) {
         Object.keys(obj).forEach(async function(key){
             await app.locals.ssStore.updateCell(ss, key, obj[key]);
             });
-//       for(var key in obj){
-//       result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);
-//	}
+      for(var key in obj){
+      result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);	}
       res.sendStatus(CREATED);
     }
     catch(err) {
@@ -136,7 +135,10 @@ function doUpdateSpreadsheet(app) {
               else{
                   res.sendStatus(BAD_REQUEST);
               }
+              
           }
+          for(var key in obj){
+          result=    await app.locals.ssStore.updateCell(ss, key[0], key[1]);    }
 
       res.sendStatus(NO_CONTENT);
         }
