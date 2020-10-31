@@ -160,8 +160,9 @@ function doUpdateSpreadsheetCell(app) {
             const cellId = req.params.cellId;
          const formula = req.body.formula;
             if(formula=== undefined) {
-                res.sendStatus(BAD_REQUEST);
                 app.use(do400Cell(app));
+                res.sendStatus(BAD_REQUEST);
+                
             }else{
                 var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
                 res.sendStatus(CREATED);
