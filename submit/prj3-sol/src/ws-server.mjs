@@ -129,7 +129,7 @@ function doUpdateSpreadsheet(app) {
           var ss_Name = req.params.spreadsheetName;
           let results ;
         
-          for(const [cellId, formula] in obj){
+          for(const [cellId, formula] in req.body){
               results = await app.locals.ssStore.updateCell(ss_Name, cellId, formula);
           }
 
