@@ -189,7 +189,7 @@ function doUpdateSpreadsheetCell(app) {
                 
             }else{
                 var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
-                res.sendStatus(CREATED);
+                res.sendStatus(NO_CONTENT);
             }
                 } catch(err) {
                   const mapped = mapError(err);
