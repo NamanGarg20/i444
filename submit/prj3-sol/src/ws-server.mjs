@@ -64,7 +64,7 @@ function setupRoutes(app) {
     app.delete('/api/store/:spreadsheetName/:cellId', doDeleteCell(app));
     //must be last
     app.use(do404(app));
-    app.use(do400Cell));
+    app.use(do400Cell(app));
     app.use(doErrors(app));
 }
 
