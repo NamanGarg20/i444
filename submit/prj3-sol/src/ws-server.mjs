@@ -161,9 +161,10 @@ function doUpdateSpreadsheetCell(app) {
             if(formula=== undefined) {
                 res.sendStatus(BAD_REQUEST);
                 app.use(do400Cell(app));
+            }else{
+                var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
+                res.sendStatus(CREATED);
             }
-      var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
-        res.sendStatus(CREATED);
                 } catch(err) {
                   const mapped = mapError(err);
                   res.status(mapped.status).json(mapped);
@@ -178,13 +179,14 @@ function doReplaceSpreadsheetCell(app) {
         const ss = req.params.spreadsheetName;
         const cellId = req.params.cellId;
         const formula = req.body.formula;
-        if(formula === undefined) {
+        if(formula=== undefined) {
             res.sendStatus(BAD_REQUEST);
             app.use(do400Cell(app));
+        }else{
+            var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
+            res.sendStatus(CREATED);
         }
         
-        var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
-        res.sendStatus(CREATED);
             } catch(err) {
               const mapped = mapError(err);
               res.status(mapped.status).json(mapped);
