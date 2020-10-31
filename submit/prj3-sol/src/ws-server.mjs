@@ -160,7 +160,7 @@ function doUpdateSpreadsheetCell(app) {
          const formula = req.body.formula;
             if(formula=== undefined) {
                 res.sendStatus(BAD_REQUEST);
-                app.use.do400Cell(app);
+                app.use(do400Cell(app));
             }
       var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
         res.sendStatus(CREATED);
@@ -180,7 +180,7 @@ function doReplaceSpreadsheetCell(app) {
         const formula = req.body.formula;
         if(formula === undefined) {
             res.sendStatus(BAD_REQUEST);
-            app.use.do400Cell(app);
+            app.use(do400Cell(app));
         }
         
         var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
