@@ -108,7 +108,7 @@ function doReplace(app) {
         const obj =  Object.assign({}, req.body);
         Object.keys(obj).forEach(async function(key){
             await app.locals.ssStore.updateCell(ss, key, obj[key]);
-            )};
+            });
 //       for(var key in obj){
 //       result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);
 //	}
@@ -129,7 +129,7 @@ function doUpdateSpreadsheet(app) {
      const obj =  Object.assign({}, req.body);
       Object.keys(obj).forEach(async function(key){
           await app.locals.ssStore.updateCell(ss, key, obj[key].formula);
-          )};
+          });
       res.sendStatus(NO_CONTENT);
         }
     catch(err) {
