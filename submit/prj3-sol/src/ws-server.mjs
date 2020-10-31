@@ -115,6 +115,7 @@ function doReplace(app) {
             result = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
             }else{
             res.sendStatus(BAD_REQUEST);
+                app.use.do400spreadsheet(app);
             }
         }
       res.sendStatus(CREATED);
@@ -139,6 +140,7 @@ function doUpdateSpreadsheet(app) {
               results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
               }else{
               res.sendStatus(BAD_REQUEST);
+                  app.use.do400spreadsheet(app);
               }
           }
       res.sendStatus(NO_CONTENT);
@@ -158,6 +160,7 @@ function doUpdateSpreadsheetCell(app) {
          const formula = req.body.formula;
             if(formula=== undefined) {
                 res.sendStatus(BAD_REQUEST);
+                app.use.do400Cell(app);
             }
       var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
         res.sendStatus(CREATED);
@@ -177,6 +180,7 @@ function doReplaceSpreadsheetCell(app) {
         const formula = req.body.formula;
         if(formula === undefined) {
             res.sendStatus(BAD_REQUEST);
+            app.use.do400Cell(app);
         }
         
         var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
@@ -219,7 +223,29 @@ function do404(app) {
   };
 }
 
+function do400spreadsheet(app) {
+  return async function(req, res) {
+    const message = "request body must be a list of cellId, formula pairs";
+    const result = {
+      status: BAD_REQUEST,
+      error: { code: 'BAD_REQUEST', message, },
+    };
+    res.status(400).
+    json(result);
+  };
+}
 
+function do400Cell(app) {
+  return async function(req, res) {
+    const message = "request body must be a { formula } object";
+    const result = {
+      status: BAD_REQUEST,
+      error: { code: 'BAD_REQUEST', message, },
+    };
+    res.status(400).
+    json(result);
+  };
+}
 /** Ensures a server error results in nice JSON sent back to client
  *  with details logged on console.
  */ 
