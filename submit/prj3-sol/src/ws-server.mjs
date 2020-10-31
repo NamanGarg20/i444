@@ -102,10 +102,13 @@ function doClear(app) {
 function doReplace(app) {
   return (async function(req, res) {
     try {
-    var result ;
+    let result ;
       const ss_Name = req.params.spreadsheetName;
         const obj =  Object.assign({}, req.body);
         await app.locals.ssStore.clear(ss_Name);
+        if(results.length!== 0){
+            var results = await app.locals.ssStore.readFormulas(ss);
+        }
         for(var key in obj){
             if (obj.hasOwnProperty(key)){
             result = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
