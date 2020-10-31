@@ -51,13 +51,13 @@ function setupRoutes(app) {
     //retrieve all spreadsheet data
     app.get('/api/store/:spreadsheetName', doGetSpreadsheet(app));
     // replace all spreadsheet data
-    app.put('/api/store/:spreadsheetName', doUpdateSpreadsheet(app));
+    app.put('/api/store/:spreadsheetName', doReplace(app));
     //Update spreadsheet data
-    app.patch('/api/store/:spreadsheetName',doReplace(app) );
+    app.patch('/api/store/:spreadsheetName',doUpdateSpreadsheet(app) );
     //Clear spreadsheet
     app.delete('/api/store/:spreadsheetName', doClear(app));
    // Replace spreadsheet cell
-    app.put('/api/store/:spreadsheetName/:cellId',doUpdateSpreadsheetCell(app));
+    app.put('/api/store/:spreadsheetName/:cellId',doReplaceSpreadsheetCell(app));
     //Update spreadsheet cell
     app.patch('/api/store/:spreadsheetName/:cellId',doUpdateSpreadsheetCell(app));
      //Delete spreadsheet cell
@@ -105,13 +105,13 @@ function doReplace(app) {
     try {
     var result ;
       const ss = req.params.spreadsheetName;
-      const obj =  req.body;
-        //Object.key(obj).forEach(async function(key){
-       //     await app.locals.ssStore.updateCell(ss, key, obj[key]);
-       // });
-       for(var key in obj){
-       result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);
-	}
+        const obj =  Object.assign({}, req.body);
+        Object.keys(obj).forEach(async function(key){
+            await app.locals.ssStore.updateCell(ss, key, obj[key]);
+            )};
+//       for(var key in obj){
+//       result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);
+//	}
       res.sendStatus(CREATED);
     }
     catch(err) {
@@ -126,10 +126,10 @@ function doUpdateSpreadsheet(app) {
   return (async function(req, res) {
       try {
     const ss = req.params.spreadsheetName;
-      const obj =  req.body;
-      for(const [cellId, formula] of obj){
-            await app.locals.ssStore.updateCell(ss, cellId, formula);
-            }
+     const obj =  Object.assign({}, req.body);
+      Object.keys(obj).forEach(async function(key){
+          await app.locals.ssStore.updateCell(ss, key, obj[key].formula);
+          )};
       res.sendStatus(NO_CONTENT);
         }
     catch(err) {
@@ -140,6 +140,17 @@ function doUpdateSpreadsheet(app) {
 }
             
 function doUpdateSpreadsheetCell(app) {
+        return (async function(req, res) {
+         const ss = req.params.spreadsheetName;
+            const cellId = req.params.cellId;
+         const obj =  req.body;
+         const formula = req.body.formula;
+      var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
+        res.sendStatus(CREATED);
+              });
+            }
+      
+      function doReplaceSpreadsheetCell(app) {
         return (async function(req, res) {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
