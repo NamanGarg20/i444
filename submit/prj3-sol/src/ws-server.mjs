@@ -130,7 +130,9 @@ function doUpdateSpreadsheet(app) {
     if (resSet.length !== 0) {
       console.log("DOESN'T EXISTS");
     }
-    await app.locals.ssStore.createCollection(ss);
+          await app.locals.ssStore.clear(ss);
+          await app.locals.ssStore.db.createCollection(ss);
+          //await app.locals.ssStore.db.createCollection(ss);
     var body = req.body;
     Object.keys(body).forEach(async function (key) {
       var formula = body[key];
