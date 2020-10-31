@@ -107,11 +107,16 @@ function doReplace(app) {
       const ss = req.params.spreadsheetName;
         const obj =  Object.assign({}, req.body);
         await app.locals.ssStore.clear(ss);
-        Object.keys(obj).forEach(async function(key){
-            await app.locals.ssStore.updateCell(ss, key, obj[key]);
-            });
-      for(var key in obj){
-      result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);}
+        for(var key in obj){
+            if (obj.hasOwnProperty(key)){
+            var formula = obj[key];
+            results = await app.locals.ssStore.updateCell(ss_Name, key, formula);
+                console.log(formula);
+            }else{
+            res.sendStatus(BAD_REQUEST);
+            app.use(doErrors(app));
+            }
+        }
       res.sendStatus(CREATED);
     }
     catch(err) {
@@ -139,7 +144,6 @@ function doUpdateSpreadsheet(app) {
               app.use(doErrors(app));
               }
           }
-
       res.sendStatus(NO_CONTENT);
         }
     catch(err) {
@@ -153,7 +157,9 @@ function doUpdateSpreadsheetCell(app) {
         return (async function(req, res) {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
-         const obj =  req.body;
+            for(var key in results){
+            if(results[key][0]!== cellId.toString) res.sendStatus(BAD_REQUEST);
+            }
          const formula = req.body.formula;
       var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
         res.sendStatus(CREATED);
@@ -164,6 +170,10 @@ function doUpdateSpreadsheetCell(app) {
         return (async function(req, res) {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
+            var results = await app.locals.ssStore.readFormulas(ss);
+            for(var key in results){
+                if(results[key][0]!== cellId.toString) res.sendStatus(BAD_REQUEST);
+                }
          const obj =  req.body;
          const formula = req.body.formula;
       var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
