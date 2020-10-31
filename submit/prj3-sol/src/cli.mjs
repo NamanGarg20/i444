@@ -1,6 +1,6 @@
 import serve from './ws-server.mjs';
 
-import { DBSSStore, Spreadsheet } from './cs544-ss/main.mjs';
+import { DBSSStore, Spreadsheet } from 'cs544-ss';
 
 import assert from 'assert';
 import child_process from 'child_process';

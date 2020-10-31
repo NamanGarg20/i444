@@ -57,11 +57,11 @@ function setupRoutes(app) {
     //Clear spreadsheet
     app.delete('/api/store/:spreadsheetName', doClear(app));
    // Replace spreadsheet cell
-    app.put('/api/store/:spreadsheetName/:cellId',
+    app.put('/api/store/:spreadsheetName/:cellId',doUpdateSpreadsheetCell(app));
     //Update spreadsheet cell
-    app.patch('/api/store/:spreadsheetName/:cellId',)
+    app.patch('/api/store/:spreadsheetName/:cellId',doUpdateSpreadsheetCell(app));
      //Delete spreadsheet cell
-    app.delete('/api/store/:spreadsheetName/:cellId', doDeleteCell(app)));
+    app.delete('/api/store/:spreadsheetName/:cellId', doDeleteCell(app));
     //must be last
     app.use(do404(app));
     app.use(doErrors(app));
@@ -74,9 +74,10 @@ function setupRoutes(app) {
 function doGetSpreadsheet(app) {
   return (async function(req, res) {
       try {
-      var ss = req.params.spreadsheetName;
-      var results = await app.locals.ssStore.readFormulas(ss);
-      return res.status(OK).json(result);
+      var result = {};
+      result.ss = req.params.spreadsheetName;
+      var results = await app.locals.ssStore.readFormulas(result.ss);
+      res.status(OK).json(results);
     }
     catch(err) {
       const mapped = mapError(err);
@@ -134,7 +135,7 @@ function doUpdateSpreadsheet(app) {
   });
 }
             
-function doUpdateSpreadsheet(app) {
+function doUpdateSpreadsheetCell(app) {
         return (async function(req, res) {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
@@ -149,7 +150,7 @@ function doDeleteCell(app){
             try {
             var ssName = req.params.spreadsheetName;
             var id = req.params.cellId;
-            var result = await.locals.ssStore.delete(ssName, id);
+            var result = await locals.ssStore.delete(ssName, id);
                 res.sendStatus(NO_CONTENT);
             } catch(err) {
               const mapped = mapError(err);
