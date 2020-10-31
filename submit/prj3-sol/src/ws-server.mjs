@@ -129,8 +129,15 @@ function doUpdateSpreadsheet(app) {
           var ss_Name = req.params.spreadsheetName;
           let results ;
         
-          for(const [cellId, formula] in req.body){
-              results = await app.locals.ssStore.updateCell(ss_Name, cellId, formula);
+          for(var key in obj){
+              if (obj.hasOwnProperty(key)){
+              var formula = obj[key];
+              results = await app.locals.ssStore.updateCell(ss_Name, key, formula);
+                  console.log(formula);
+              }else{
+              res.sendStatus(BAD_REQUEST);
+              app.use(doErrors(app));
+              }
           }
 
       res.sendStatus(NO_CONTENT);
