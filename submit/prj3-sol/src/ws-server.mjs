@@ -112,7 +112,7 @@ function doReplace(app) {
             await app.locals.ssStore.clear(ss_Name);
         }
         for(var key in obj){
-            if(obj[key]===null){
+            if(obj[key]===undefined){
                 const message = "request body must be a { formula } object";
                 const errResult = {
                   status: BAD_REQUEST,
