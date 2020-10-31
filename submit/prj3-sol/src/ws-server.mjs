@@ -112,7 +112,7 @@ function doReplace(app) {
             await app.locals.ssStore.clear(ss_Name);
         }
         for(var key in obj){
-            if(obj[key][0]===null){
+            if(obj[key]===null){
                 const message = "request body must be a { formula } object";
                 const errResult = {
                   status: BAD_REQUEST,
@@ -144,7 +144,7 @@ function doUpdateSpreadsheet(app) {
           let results ;
         
           for(var key in obj){
-              if(obj[key][0]===null){
+              if(obj[key]===null){
                   const message = "request body must be a { formula } object";
                   const errResult = {
                     status: BAD_REQUEST,
