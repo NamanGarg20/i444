@@ -119,6 +119,7 @@ function doReplace(app) {
                   error: { code: 'BAD_REQUEST', message, },
                 };
                 res.status(400).json(errResult);
+                break;
                 }
             else{
             if (obj.hasOwnProperty(key)){
