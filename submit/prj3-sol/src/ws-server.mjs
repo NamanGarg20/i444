@@ -112,16 +112,19 @@ function doReplace(app) {
             await app.locals.ssStore.clear(ss_Name);
         }
         for(var key in obj){
+            if(obj[key][0]===null){
+                const message = "request body must be a { formula } object";
+                const errResult = {
+                  status: BAD_REQUEST,
+                  error: { code: 'BAD_REQUEST', message, },
+                };
+                res.status(400).json(errResult);
+                }
+            else{
             if (obj.hasOwnProperty(key)){
             result = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
-            }else{
-            const message = "request body must be a { formula } object";
-            const errResult = {
-              status: BAD_REQUEST,
-              error: { code: 'BAD_REQUEST', message, },
-            };
-            res.status(400).json(errResult);
             }
+        }
         }
       res.sendStatus(CREATED);
     }
@@ -141,17 +144,20 @@ function doUpdateSpreadsheet(app) {
           let results ;
         
           for(var key in obj){
+              if(obj[key][0]===null){
+                  const message = "request body must be a { formula } object";
+                  const errResult = {
+                    status: BAD_REQUEST,
+                    error: { code: 'BAD_REQUEST', message, },
+                  };
+                  res.status(400).json(errResult);
+                  }
+              else{
               if (obj.hasOwnProperty(key)){
               results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
-              }else{
-                  
-              const message = "request body must be a { formula } object";
-              const errResult = {
-                status: BAD_REQUEST,
-                error: { code: 'BAD_REQUEST', message, },
-              };
-              res.status(400).json(errResult);
               }
+              
+          }
           }
       res.sendStatus(NO_CONTENT);
         }
