@@ -46,36 +46,37 @@ const STORE = 'store';
 function setupRoutes(app) {
   app.use(cors(CORS_OPTIONS));  //needed for future projects
   //@TODO add routes to handlers
-<<<<<<< HEAD
+
     app.use(bodyParser.json());
-    
+    //retrieve all spreadsheet data
+    app.get('/api/store/:spreadsheetName', doGetSpreadsheet(app));
+    // replace all spreadsheet data
+    app.put('/api/store/:spreadsheetName', doUpdateSpreadsheet(app));
+    //Update spreadsheet data
+    app.patch('/api/store/:spreadsheetName',doUpdateSpreadsheet(app) );
+    //Clear spreadsheet
+    app.delete('/api/store/:spreadsheetName', doClear(app));
+   // Replace spreadsheet cell
+    app.put('/api/store/:spreadsheetName/:cellId',
+    //Update spreadsheet cell
+    app.patch('/api/store/:spreadsheetName/:cellId',)
+     //Delete spreadsheet cell
+    app.delete('/api/store/:spreadsheetName/:cellId', doDeleteCell(app)));
     //must be last
     app.use(do404(app));
     app.use(doErrors(app));
-=======
->>>>>>> e5ae8440faeb2f991d60e3a5d22c6af804568e65
 }
 
 /****************************** Handlers *******************************/
 
 //@TODO
-<<<<<<< HEAD
-function doGet(app) {
+
+function doGetSpreadsheet(app) {
   return (async function(req, res) {
-    try {
-      const id = req.params.id;
-      const results = await app.locals.ssStore.readFormulas({ id: id });
-      if (results.length === 0) {
-    throw {
-      isDomain: true,
-      errorCode: 'NOT_FOUND',
-      message: `user ${id} not found`,
-    };
-      }
-      else {
-          res.status(OK);
-    res.json(results);
-      }
+      try {
+      var ss = req.params.spreadsheetName;
+      var results = await app.locals.ssStore.readFormulas(ss);
+      return res.status(OK).json(result);
     }
     catch(err) {
       const mapped = mapError(err);
@@ -84,27 +85,12 @@ function doGet(app) {
   });
 }
 
-function doDelete(app) {
+function doClear(app) {
   return (async function(req, res) {
     try {
-      const id = req.params.id;
-      const results = await app.locals.ssStore.clear({ id: id });
+      const ss = req.params.spreadsheetName;
+      const results = await app.locals.ssStore.clear(ss);
       res.sendStatus(NO_CONTENT);
-    }
-    catch(err) {
-      const mapped = mapError(err);
-      res.status(mapped.status).json(mapped);
-    }
-  });
-}
-
-function doUpdate(app) {
-  return (async function(req, res) {
-    try {
-      const patch = Object.assign({}, req.body);
-      patch.id = req.params.id;
-      const results = app.locals.model.updateCell(patch);
-      res.sendStatus(OK);
     }
     catch(err) {
       const mapped = mapError(err);
@@ -116,10 +102,12 @@ function doUpdate(app) {
 function doReplace(app) {
   return (async function(req, res) {
     try {
-      const replacement = Object.assign({}, req.body);
-      replacement.id = req.params.id;
-      const results = await app.locals.model.replace(replacement);
-      res.sendStatus(OK);
+      const ss = req.params.spreadsheetName;
+      const obj =  req.body;
+        Object.key(obj).forEach(async function([cellId, formula]){
+            await app.locals.ssStore.updateCell(ss, cellId, formula);
+        });
+      res.sendStatus(CREATED);
     }
     catch(err) {
       const mapped = mapError(err);
@@ -127,8 +115,49 @@ function doReplace(app) {
     }
   });
 }
-=======
->>>>>>> e5ae8440faeb2f991d60e3a5d22c6af804568e65
+
+
+function doUpdateSpreadsheet(app) {
+  return (async function(req, res) {
+      try {
+    const ss = req.params.spreadsheetName;
+      const obj =  req.body;
+      for(const [cellId, formula] of obj){
+            await app.locals.ssStore.updateCell(ss, cellId, formula);
+            }
+      res.sendStatus(NO_CONTENT);
+        }
+    catch(err) {
+        const mapped = mapError(err);
+        res.status(mapped.status).json(mapped);
+        }
+  });
+}
+            
+function doUpdateSpreadsheet(app) {
+        return (async function(req, res) {
+         const ss = req.params.spreadsheetName;
+            const cellId = req.params.cellId;
+         const obj =  req.body;
+      var result =  await app.locals.ssStore.updateCell(ss, cellId, obj[cellId]);
+        res.sendStatus(CREATED);
+              });
+            }
+
+function doDeleteCell(app){
+        return (async function(req, res){
+            try {
+            var ssName = req.params.spreadsheetName;
+            var id = req.params.cellId;
+            var result = await.locals.ssStore.delete(ssName, id);
+                res.sendStatus(NO_CONTENT);
+            } catch(err) {
+              const mapped = mapError(err);
+              res.status(mapped.status).json(mapped);
+            }
+            
+        });
+    }
 
 /** Default handler for when there is no route for a particular method
  *  and path.
