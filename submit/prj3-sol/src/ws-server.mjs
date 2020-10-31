@@ -125,11 +125,14 @@ function doReplace(app) {
 function doUpdateSpreadsheet(app) {
   return (async function(req, res) {
       try {
-    const ss = req.params.spreadsheetName;
-     const obj =  Object.assign({}, req.body);
-      Object.keys(obj).forEach(async function(key){
-          await app.locals.ssStore.updateCell(ss, key, obj[key].formula);
-          });
+    const patch = Object.assign({}, req.body);
+      patch.SS_NAME = req.params.SS_NAME;
+      let results;
+      for(cell in req.body){
+          patch.CELL_ID = cell[0];
+          patch.formula = cell[1];
+          results = await app.locals.ssStore.updateCell(patch.SS_NAME, patch.CELL_ID, patch.formula);
+      }
       res.sendStatus(NO_CONTENT);
         }
     catch(err) {
