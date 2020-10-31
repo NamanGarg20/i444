@@ -106,11 +106,12 @@ function doReplace(app) {
     var result ;
       const ss = req.params.spreadsheetName;
         const obj =  Object.assign({}, req.body);
+        await app.locals.ssStore.clear(ss);
         Object.keys(obj).forEach(async function(key){
             await app.locals.ssStore.updateCell(ss, key, obj[key]);
             });
       for(var key in obj){
-      result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);	}
+      result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);}
       res.sendStatus(CREATED);
     }
     catch(err) {
@@ -128,17 +129,9 @@ function doUpdateSpreadsheet(app) {
           var ss_Name = req.params.spreadsheetName;
           let results ;
         
-          for(var key of obj){
-              if(obj.hasOwnProperty(key)){
-              results = await app.locals.ssStore.updateCell(ss_Name, key, obj[key]);
-              }
-              else{
-                  res.sendStatus(BAD_REQUEST);
-              }
-              
+          for(const [cellId, formula] of obj){
+              results = await app.locals.ssStore.updateCell(ss_Name, cellId, formula);
           }
-          for(var key in obj){
-          result=    await app.locals.ssStore.updateCell(ss, key[0], key[1]);    }
 
       res.sendStatus(NO_CONTENT);
         }
