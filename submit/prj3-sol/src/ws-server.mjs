@@ -137,7 +137,7 @@ function doUpdateSpreadsheet(app) {
           for(var key in obj){
               if (obj.hasOwnProperty(key)){
               var formula = obj[key];
-              results = await app.locals.ssStore.updateCell(ss_Name, key, formula);
+              results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
                   console.log(formula);
               }else{
               res.sendStatus(BAD_REQUEST);
