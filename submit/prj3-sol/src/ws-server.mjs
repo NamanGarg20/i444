@@ -53,7 +53,7 @@ function setupRoutes(app) {
     // replace all spreadsheet data
     app.put('/api/store/:spreadsheetName', doUpdateSpreadsheet(app));
     //Update spreadsheet data
-    app.patch('/api/store/:spreadsheetName',doUpdateSpreadsheet(app) );
+    app.patch('/api/store/:spreadsheetName',doReplace(app) );
     //Clear spreadsheet
     app.delete('/api/store/:spreadsheetName', doClear(app));
    // Replace spreadsheet cell
@@ -75,8 +75,8 @@ function doGetSpreadsheet(app) {
   return (async function(req, res) {
       try {
       var result = {};
-      result.ss = req.params.spreadsheetName;
-      var results = await app.locals.ssStore.readFormulas(result.ss);
+      var ss = req.params.spreadsheetName;
+      var results = await app.locals.ssStore.readFormulas(ss);
       res.status(OK).json(results);
     }
     catch(err) {
@@ -103,11 +103,15 @@ function doClear(app) {
 function doReplace(app) {
   return (async function(req, res) {
     try {
+    var result ;
       const ss = req.params.spreadsheetName;
       const obj =  req.body;
-        Object.key(obj).forEach(async function([cellId, formula]){
-            await app.locals.ssStore.updateCell(ss, cellId, formula);
-        });
+        //Object.key(obj).forEach(async function(key){
+       //     await app.locals.ssStore.updateCell(ss, key, obj[key]);
+       // });
+       for(var key in obj){
+       result=	await app.locals.ssStore.updateCell(ss, key[0], key[1]);
+	}
       res.sendStatus(CREATED);
     }
     catch(err) {
@@ -140,7 +144,8 @@ function doUpdateSpreadsheetCell(app) {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
          const obj =  req.body;
-      var result =  await app.locals.ssStore.updateCell(ss, cellId, obj[cellId]);
+         const formula = req.body.formula;
+      var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
         res.sendStatus(CREATED);
               });
             }
@@ -150,7 +155,7 @@ function doDeleteCell(app){
             try {
             var ssName = req.params.spreadsheetName;
             var id = req.params.cellId;
-            var result = await locals.ssStore.delete(ssName, id);
+            var result = await app.locals.ssStore.delete(ssName, id);
                 res.sendStatus(NO_CONTENT);
             } catch(err) {
               const mapped = mapError(err);
