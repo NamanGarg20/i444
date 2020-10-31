@@ -115,8 +115,12 @@ function doReplace(app) {
             if (obj.hasOwnProperty(key)){
             result = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
             }else{
-            res.sendStatus(BAD_REQUEST);
-                app.use.do400spreadsheet(app);
+            const message = "request body must be a { formula } object";
+            const errResult = {
+              status: BAD_REQUEST,
+              error: { code: 'BAD_REQUEST', message, },
+            };
+            res.status(400).json(errResult);
             }
         }
       res.sendStatus(CREATED);
@@ -140,8 +144,13 @@ function doUpdateSpreadsheet(app) {
               if (obj.hasOwnProperty(key)){
               results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
               }else{
-              res.sendStatus(BAD_REQUEST);
-                  app.use.do400spreadsheet(app);
+                  
+              const message = "request body must be a { formula } object";
+              const errResult = {
+                status: BAD_REQUEST,
+                error: { code: 'BAD_REQUEST', message, },
+              };
+              res.status(400).json(errResult);
               }
           }
       res.sendStatus(NO_CONTENT);
@@ -160,12 +169,12 @@ function doUpdateSpreadsheetCell(app) {
             const cellId = req.params.cellId;
          const formula = req.body.formula;
             if(formula=== undefined) {
-                const message = "request body must be a list of cellId, formula pairs";
-                const result = {
+                const message = "request body must be a { formula } object";
+                const errResult = {
                   status: BAD_REQUEST,
                   error: { code: 'BAD_REQUEST', message, },
                 };
-                res.status(400).json(result);
+                res.status(400).json(errResult);
                 
             }else{
                 var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
@@ -186,12 +195,12 @@ function doReplaceSpreadsheetCell(app) {
         const cellId = req.params.cellId;
         const formula = req.body.formula;
         if(formula=== undefined) {
-            const message = "request body must be a list of cellId, formula pairs";
-            const result = {
-              status: BAD_REQUEST,
-              error: { code: 'BAD_REQUEST', message, },
-            };
-            res.status(400).json(result);
+             const message = "request body must be a { formula } object";
+                           const errResult = {
+                             status: BAD_REQUEST,
+                             error: { code: 'BAD_REQUEST', message, },
+                           };
+                           res.status(400).json(errResult);
         }else{
             var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
             res.sendStatus(CREATED);
