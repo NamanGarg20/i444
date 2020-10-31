@@ -110,7 +110,7 @@ function doReplace(app) {
         for(var key in obj){
             if (obj.hasOwnProperty(key)){
             var formula = obj[key];
-            results = await app.locals.ssStore.updateCell(ss_Name, key, formula);
+            results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
                 console.log(formula);
             }else{
             res.sendStatus(BAD_REQUEST);
@@ -157,9 +157,9 @@ function doUpdateSpreadsheetCell(app) {
         return (async function(req, res) {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
-            for(var key in results){
-            if(results[key][0]!== cellId.toString) res.sendStatus(BAD_REQUEST);
-            }
+//            for(var key in results){
+//            if(results[key][0]!== cellId.toString) res.sendStatus(BAD_REQUEST);
+//            }
          const formula = req.body.formula;
       var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
         res.sendStatus(CREATED);
@@ -171,9 +171,9 @@ function doUpdateSpreadsheetCell(app) {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
             var results = await app.locals.ssStore.readFormulas(ss);
-            for(var key in results){
-                if(results[key][0]!== cellId.toString) res.sendStatus(BAD_REQUEST);
-                }
+//            for(var key in results){
+//                if(results[key][1]!== cellId.toString) res.sendStatus(BAD_REQUEST);
+//                }
          const obj =  req.body;
          const formula = req.body.formula;
       var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
