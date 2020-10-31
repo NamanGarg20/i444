@@ -112,7 +112,7 @@ function doReplace(app) {
             await app.locals.ssStore.clear(ss_Name);
         }
         for(var key in obj){
-            if(obj[key]===undefined){
+            if(obj[key][0]===undefined){
                 const message = "request body must be a { formula } object";
                 const errResult = {
                   status: BAD_REQUEST,
@@ -144,20 +144,11 @@ function doUpdateSpreadsheet(app) {
           let results ;
         
           for(var key in obj){
-              if(obj[key]===null){
-                  const message = "request body must be a { formula } object";
-                  const errResult = {
-                    status: BAD_REQUEST,
-                    error: { code: 'BAD_REQUEST', message, },
-                  };
-                  res.status(400).json(errResult);
-                  }
-              else{
+            
               if (obj.hasOwnProperty(key)){
               results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
               }
               
-          }
           }
       res.sendStatus(NO_CONTENT);
         }
