@@ -105,9 +105,10 @@ function doReplace(app) {
     let result ;
       const ss_Name = req.params.spreadsheetName;
         const obj =  Object.assign({}, req.body);
-        await app.locals.ssStore.clear(ss_Name);
+        var results = await app.locals.ssStore.readFormulas(ss);
+        
         if(results.length!== 0){
-            var results = await app.locals.ssStore.readFormulas(ss);
+            await app.locals.ssStore.clear(ss_Name);
         }
         for(var key in obj){
             if (obj.hasOwnProperty(key)){
