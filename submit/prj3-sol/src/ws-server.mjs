@@ -109,7 +109,7 @@ function doReplace(app) {
         await app.locals.ssStore.clear(ss_Name);
         for(var key in obj){
             if (obj.hasOwnProperty(key)){
-            results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
+            result = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
             }else{
             res.sendStatus(BAD_REQUEST);
             }
