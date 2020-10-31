@@ -106,13 +106,12 @@ function doReplace(app) {
     var result ;
       const ss_Name = req.params.spreadsheetName;
         const obj =  Object.assign({}, req.body);
-        await app.locals.ssStore.clear(ss);
+        await app.locals.ssStore.clear(ss_Name);
         for(var key in obj){
             if (obj.hasOwnProperty(key)){
             results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
             }else{
             res.sendStatus(BAD_REQUEST);
-            app.use(doErrors(app));
             }
         }
       res.sendStatus(CREATED);
@@ -137,7 +136,6 @@ function doUpdateSpreadsheet(app) {
               results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
               }else{
               res.sendStatus(BAD_REQUEST);
-              app.use(doErrors(app));
               }
           }
       res.sendStatus(NO_CONTENT);
@@ -151,31 +149,41 @@ function doUpdateSpreadsheet(app) {
             
 function doUpdateSpreadsheetCell(app) {
         return (async function(req, res) {
+            try {
          const ss = req.params.spreadsheetName;
             const cellId = req.params.cellId;
          const formula = req.body.formula;
             if(formula=== undefined) {
                 res.sendStatus(BAD_REQUEST);
-                app.use(doErrors(app));
             }
       var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
         res.sendStatus(CREATED);
+                } catch(err) {
+                  const mapped = mapError(err);
+                  res.status(mapped.status).json(mapped);
+                }
+                
               });
             }
       
 function doReplaceSpreadsheetCell(app) {
         return (async function(req, res) {
+              try {
         const ss = req.params.spreadsheetName;
         const cellId = req.params.cellId;
         var results = await app.locals.ssStore.readFormulas(ss);
         const formula = req.body.formula;
-        if(formula=== undefined) {
+        if(formula === undefined) {
             res.sendStatus(BAD_REQUEST);
-            app.use(doErrors(app));
         }
         
         var result =  await app.locals.ssStore.updateCell(ss, cellId, formula);
         res.sendStatus(CREATED);
+            } catch(err) {
+              const mapped = mapError(err);
+              res.status(mapped.status).json(mapped);
+            }
+            
     });
 }
 
