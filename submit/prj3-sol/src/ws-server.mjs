@@ -74,7 +74,6 @@ function setupRoutes(app) {
 function doGetSpreadsheet(app) {
   return (async function(req, res) {
       try {
-      var result = {};
       var ss = req.params.spreadsheetName;
       var results = await app.locals.ssStore.readFormulas(ss);
       res.status(OK).json(results);
@@ -90,7 +89,7 @@ function doClear(app) {
   return (async function(req, res) {
     try {
       const ss = req.params.spreadsheetName;
-      const results = await app.locals.ssStore.clear(ss);
+      await app.locals.ssStore.clear(ss);
       res.sendStatus(NO_CONTENT);
     }
     catch(err) {
@@ -171,7 +170,6 @@ function doReplaceSpreadsheetCell(app) {
               try {
         const ss = req.params.spreadsheetName;
         const cellId = req.params.cellId;
-        var results = await app.locals.ssStore.readFormulas(ss);
         const formula = req.body.formula;
         if(formula === undefined) {
             res.sendStatus(BAD_REQUEST);
