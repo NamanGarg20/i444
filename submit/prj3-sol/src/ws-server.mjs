@@ -111,8 +111,10 @@ function doReplace(app) {
         if(results.length!== 0){
             await app.locals.ssStore.clear(ss_Name);
         }
+        var flag = false;
         for(var key in obj){
             if(obj[key][0]===undefined){
+                flag = true;
                 const message = "request body must be a { formula } object";
                 const errResult = {
                   status: BAD_REQUEST,
@@ -127,7 +129,7 @@ function doReplace(app) {
             }
         }
         }
-      res.sendStatus(CREATED);
+     if(!flag) res.sendStatus(CREATED);
     }
     catch(err) {
       const mapped = mapError(err);
