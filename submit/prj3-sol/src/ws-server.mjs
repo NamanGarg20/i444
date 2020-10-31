@@ -115,7 +115,7 @@ function doReplace(app) {
         for(var key in obj){
             if(obj[key][0]===undefined){
                 flag = true;
-                const message = "request body must be a { formula } object";
+                const message = "request body must be a list of cellId, formula pairs";
                 const errResult = {
                   status: BAD_REQUEST,
                   error: { code: 'BAD_REQUEST', message, },
@@ -145,15 +145,26 @@ function doUpdateSpreadsheet(app) {
           var obj = Object.assign({}, req.body);
           var ss_Name = req.params.spreadsheetName;
           let results ;
-        
+        var flag = false;
           for(var key in obj){
-            
+            if(obj[key][0]===undefined){
+                flag = true;
+                const message = "request body must be a list of cellId, formula pairs";
+                const errResult = {
+                  status: BAD_REQUEST,
+                  error: { code: 'BAD_REQUEST', message, },
+                };
+                res.status(400).json(errResult);
+                break;
+                }
+            else{
               if (obj.hasOwnProperty(key)){
               results = await app.locals.ssStore.updateCell(ss_Name, obj[key][0], obj[key][1]);
               }
               
           }
-      res.sendStatus(NO_CONTENT);
+          }
+     if(!flag) res.sendStatus(NO_CONTENT);
         }
     catch(err) {
         const mapped = mapError(err);
