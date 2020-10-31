@@ -125,19 +125,18 @@ function doReplace(app) {
 function doUpdateSpreadsheet(app) {
   return (async function(req, res) {
       try {
-    var ss = req.params.spreadsheetName;
-    var resSet = await app.locals.ssStore.readFormulas(ss);
-    if (resSet.length !== 0) {
-      console.log("DOESN'T EXISTS");
-    }
-          await app.locals.ssStore.clear(ss);
-          await app.locals.ssStore.db.createCollection(ss);
-          //await app.locals.ssStore.db.createCollection(ss);
-    var body = req.body;
-    Object.keys(body).forEach(async function (key) {
-      var formula = body[key];
-      await app.locals.ssStore.updateCell(ss, key, formula);
-    });
+          var obj = Object.assign({}, req.body);
+          var ss_Name = req.params.spreadsheetName;
+          let results ;
+        
+          for(var key of obj){
+              if(obj.hasOwnProperty(key)){
+              results = await app.locals.ssStore.updateCell(ss_Name, key, obj[key]);
+              }
+              else{
+                  res.sendStatus(BAD_REQUEST);
+              }
+          }
 
       res.sendStatus(NO_CONTENT);
         }
