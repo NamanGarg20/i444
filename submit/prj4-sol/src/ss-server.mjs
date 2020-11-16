@@ -56,8 +56,8 @@ function setupRoutes(app) {
         }
     });
     app.post('/', postSubmit(app));
-    app.get('/spreadsheet.html', doView(app));
-    app.post('/spreadsheet.html', postView(app));
+    app.get('/ss/:ssName', doView(app));
+    app.post('/ss/:ssName', postView(app));
   //must be last
   app.use(do404(app));
   app.use(doErrors(app));
@@ -76,7 +76,6 @@ function doSumit(app) {
                
 function postSubmit(app){
    return async function(req, res) {
-       
        var spreadsheetName = trimValues(req.body).ssName;
        var ss_view = {};
        ss_view['ssName'] = spreadsheetName;

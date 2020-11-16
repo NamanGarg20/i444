@@ -11,8 +11,9 @@
         
         <form action="/index.html" method ="POST">
             <label for="ssName"> Open Spreadsheet Name</label>
+            <br>
             <span>
-            <input name="ssName" type="text" value="{{ssName}}" id ="ssName"/>
+            <input name="ssName" type="text" value="" id ="ssName"/>
             <br/>
             <span class="error" id="ssNameError">{{ssNameError}}</span>
             </span>
