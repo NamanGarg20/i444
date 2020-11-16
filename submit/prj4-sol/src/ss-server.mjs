@@ -55,27 +55,12 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/index.html', async function(req, res) {
-        try{
-        var spreadsheetName = trimValues(req.body).ssName;
-        var ss_view = {};
-        ss_view['ssName'] = spreadsheetName;
-        var errors ={};
-        errors = validateField('ssName', req.body, errors);
-        if(!errors){
-            
-        var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
-        var ssDump = await spreadsheet.dump();
-        
-            res.redirect('/ss/'+spreadsheetName);
-        
-            
-        }
-        if(errors){
-             res.status(NOT_FOUND).send(app.locals.mustache.render('index', ss_view));
-        }
-        }catch(err){
-            console.error(err);
+    app.post('/', async function(req, res) {
+        var ssName = req.body.ssName;
+        var ss = await Spreadsheet.make(ssName, app.locals.store);
+        var dbResults = await ss.dump();
+        if (dbResults.length) {
+          res.redirect('/ss/'+ssName);
         }
     });
     app.get('/ss/ssName', doView(app));
