@@ -44,7 +44,7 @@ function setupRoutes(app) {
   app.use(bodyParser.urlencoded({extended: true}));
   
   //@TODO add routes
-    app.get('/index.html', doSubmit(app));
+    app.get('/index.html', this.doSubmit(app));
     app.post('/index.html', postSubmit(app));
     app.get('/spreadsheet.html', doView(app));
     app.post('/spreadsheet.html', postView(app));
