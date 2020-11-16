@@ -55,7 +55,7 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/', async function(req, res) {
+    app.post('/index.html', async function(req, res) {
         var ssName = req.body.ssName;
         var ss = await Spreadsheet.make(ssName, app.locals.store);
         var dbResults = await ss.dump();
