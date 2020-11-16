@@ -55,18 +55,19 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/index.html', async function(req, res) {
-        try{
-        var ssName = req.body.ssName;
-        var ss = await Spreadsheet.make(ssName, app.locals.store);
-        var dbResults = await ss.dump();
-        if (dbResults.length) {
-          res.redirect('/ss/'+ssName);
-        }
-            
-        }catch(err){
-            console.log(err);
-        }
+    app.post('/', async function (req, res, next) {
+      var ssName = req.body.ssName;
+      var ss = await Spreadsheet.make(ssName, app.locals.store);
+      var dbResults = await ss.dump();
+      if (dbResults.length) {
+        res.redirect('/ss/'+ssName);
+      }
+      else {
+        var view = {};
+        view['ssName'] = ssName;
+        view['ssNameError'] = "Spreadsheet not found!"
+        res.status(NOT_FOUND).send(app.locals.mustache.render('index', view));
+      }
     });
     app.get('/ss/ssName', doView(app));
     app.post('/ss/ssName', postView(app));
