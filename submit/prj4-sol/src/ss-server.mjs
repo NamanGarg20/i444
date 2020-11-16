@@ -202,7 +202,7 @@ function doTable(ssDump){
     }
     var tableColHeader=[];
     var tableValues=[];
-    var table[];
+    var table=[];
     for(var i=0; i<max_col && max_col<==26;i++){
         tableColHeader.push(Str_values[i]);
     }
@@ -216,7 +216,7 @@ function doTable(ssDump){
         tableValues.push(tableRow);
     }
     table.push(tableValues);
-    return tableValues;
+    return table;
     
     
 }
