@@ -55,7 +55,7 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/index.html', postSubmit(app));
+    app.post('/', postSubmit(app));
     app.get('/ss/:ssName', doView(app));
     app.post('/ss/:ssName', postView(app));
   //must be last
