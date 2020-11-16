@@ -1,21 +1,23 @@
+
 import axios from 'axios';
 
-/** Wrapper which calls spreadsheet web-services at baseUrl.  
+/** Wrapper which calls spreadsheet web-services at baseUrl.
  *
  * If a web service error occurs and that error is understood, then the
  * error is rethrown with the following fields:
- * 
+ *
  *   status: The HTTP status code returned by the web service.
  *
  *   error: The error object returned by the web service.  The error
  *   object will have a 'code' field giving a succinct
  *   characterization of the error and a 'message' field giving the
- *   details of the error. 
+ *   details of the error.
  *
- * If the error is not understood then it is simply rethrown. 
+ * If the error is not understood then it is simply rethrown.
  */
 
-const BASE = '/api/store';
+const BASE = '/api/store/';
+
 
 export default class SSClient {
 
@@ -31,9 +33,9 @@ export default class SSClient {
     /** Update cellId for spreadsheet ssName to contain formula */
   async updateCell(ssName, cellId, formula) {
     try {
-      //@TODO
-        const response = await this.axios.patch('/${BASE}/:${ssName}/:$(cellId}',formula);
-        return response.data;
+      var body = {};
+      body['formula'] = formula;
+      var resp = await axios.patch('http://localhost:2345/api/store/' + ssName + '/' + cellId, body);
     }
     catch (err) {
       rethrow(err);
@@ -44,8 +46,7 @@ export default class SSClient {
   /** Clear contents of spreadsheet ssName */
   async clear(ssName) {
     try {
-        const response = axios.delete('/${BASE}/:${ssName}');
-        return response.data;
+      var resp = await axios.delete('http://localhost:2345/api/store/' + ssName);
     }
     catch (err) {
       rethrow(err);
@@ -56,8 +57,7 @@ export default class SSClient {
   /** Delete all info for cellId from spreadsheet ssName. */
   async delete(ssName, cellId) {
     try {
-        const response = axios.delete('/${BASE}/:${ssName}/:$(cellId}');
-        return response.data
+      var resp = await axios.delete('http://localhost:2345/api/store/' + ssName + '/' + cellId);
     }
     catch (err) {
       rethrow(err);
@@ -67,9 +67,8 @@ export default class SSClient {
   /** Return list of pairs of cellId, formula for spreadsheet ssName */
   async readFormulas(ssName) {
     try {
-      //@TODO
-        const response = axios.get('/${BASE}/:${ssName}');
-        return response.data;
+      var resp = await axios.get('http://localhost:2345/api/store/' + ssName)
+      return resp.data;
     }
     catch (err) {
       rethrow(err);
@@ -81,8 +80,8 @@ export default class SSClient {
 function rethrow(err) {
   if (err.response && err.response.data && err.response.data.error) {
     throw { status: err.response.status,
-	    error: err.response.data.error,
-	  };
+        error: err.response.data.error,
+      };
   }
   else {
     throw err;

@@ -56,11 +56,16 @@ function setupRoutes(app) {
         }
     });
     app.post('/index.html', async function(req, res) {
+        try{
         var ssName = req.body.ssName;
         var ss = await Spreadsheet.make(ssName, app.locals.store);
         var dbResults = await ss.dump();
         if (dbResults.length) {
           res.redirect('/ss/'+ssName);
+        }
+            
+        }catch(err){
+            console.log(err);
         }
     });
     app.get('/ss/ssName', doView(app));
