@@ -6,19 +6,19 @@
     </head>
     <body>
         <h1> CS444 Spreadsheet Selection </h1>
-        {{#error}}
-        <span class="error">{{msg}}</span>
-        {{/errors}}
+        
+        <span class="error"></span>
         
         <form action="/index.html" method ="POST">
-        {{fields}}
             <label for="ssName"> Open Spreadsheet Name</label>
             <span>
-            <input name="ssName" type="text" ""value="{{ssName}}" id ="ssName"/>
+            <input name="ssName" type="text" value="{{ssName}}" id ="ssName"/>
             <br/>
-            <span class="error" id="ssNameError"></span>
+            <span class="error" id="ssNameError">{{ssNameError}}</span>
             </span>
             <input type="submit" value="Open"/>
         </form>
     </body>
 </html>
+
+
