@@ -69,7 +69,7 @@ function setupRoutes(app) {
         view['ssNameError'] = "Spreadsheet not found!"
         res.status(NOT_FOUND).send(app.locals.mustache.render('index', view));
       }
-            catch(err){
+        }catch(err){
                 console.log(err);
             }
     });
