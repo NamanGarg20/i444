@@ -61,8 +61,8 @@ function doSumit(app) {
       ss_view['ssName'] = 'spreadsheetName';
       res.status(OK).send(app.locals.mustache.render('index', ss_view));
       
-  };
-};
+  }
+}
                
 function postSubmit(app){
    return async function(req, res) {
