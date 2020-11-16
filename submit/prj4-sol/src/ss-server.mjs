@@ -59,7 +59,7 @@ function setupRoutes(app) {
       var ssName = req.body.ssName;
       var ss = await Spreadsheet.make(ssName, app.locals.store);
       var dbResults = await ss.dump();
-      if (dbResults.length) {
+      if (dbResults===undefined) {
         res.redirect('/ss/'+ssName);
       }
       else {
