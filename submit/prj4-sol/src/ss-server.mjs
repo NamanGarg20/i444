@@ -55,7 +55,7 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/', async function(req, res) {
+    app.post('/index.html', async function(req, res) {
         try{
         var spreadsheetName = trimValues(req.body).ssName;
         var ss_view = {};
@@ -66,9 +66,9 @@ function setupRoutes(app) {
             
         var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
         var ssDump = await spreadsheet.dump();
-        if(ssDump!==undefined || ssDump.length!==0){
+        
             res.redirect('/ss/'+spreadsheetName);
-        }
+        
             
         }
         if(errors){
@@ -78,8 +78,8 @@ function setupRoutes(app) {
             console.error(err);
         }
     });
-    app.get('/ss/:ssName', doView(app));
-    app.post('/ss/:ssName', postView(app));
+    app.get('/ss/ssName', doView(app));
+    app.post('/ss/ssName', postView(app));
   //must be last
   app.use(do404(app));
   app.use(doErrors(app));
