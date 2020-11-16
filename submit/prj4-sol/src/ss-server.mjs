@@ -55,7 +55,29 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/', postSubmit(app));
+    app.post('/', async function(req, res) {
+        try{
+        var spreadsheetName = trimValues(req.body).ssName;
+        var ss_view = {};
+        ss_view['ssName'] = spreadsheetName;
+        var errors ={};
+        errors = validateField('ssName', req.body, errors);
+        if(!errors){
+            
+        var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
+        var ssDump = await spreadsheet.dump();
+        if(ssDump!==undefined || ssDump.length!==0){
+            res.redirect('/ss/'+spreadsheetName);
+        }
+            
+        }
+        if(errors){
+             res.status(NOT_FOUND).send(app.locals.mustache.render('index', ss_view));
+        }
+        }catch(err){
+            console.error(err);
+        }
+    });
     app.get('/ss/:ssName', doView(app));
     app.post('/ss/:ssName', postView(app));
   //must be last
