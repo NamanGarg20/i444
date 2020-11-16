@@ -87,7 +87,7 @@ function postSubmit(app){
        var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
        var ssDump = await spreadsheet.dump();
        if(ssDump!==undefined || ssDump.length!==0){
-           res.redirect('ss'+spreadsheetName);
+           res.redirect('ss/'+spreadsheetName);
        }
            
        }
