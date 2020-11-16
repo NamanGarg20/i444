@@ -44,7 +44,13 @@ function setupRoutes(app) {
   app.use(bodyParser.urlencoded({extended: true}));
   
   //@TODO add routes
-    app.get('/index.html', this.doSubmit(app));
+    app.get('/index.html', return async function(req, res) {
+       // var spreadsheetName = trimValues(req.body).ssName;
+        var ss_view = {};
+        ss_view['ssName'] = 'spreadsheetName';
+        res.status(OK).send(app.locals.mustache.render('index', ss_view));
+        
+    });
     app.post('/index.html', postSubmit(app));
     app.get('/spreadsheet.html', doView(app));
     app.post('/spreadsheet.html', postView(app));
