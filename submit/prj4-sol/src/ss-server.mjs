@@ -56,6 +56,7 @@ function setupRoutes(app) {
         }
     });
     app.post('/index.html', async function (req, res, next) {
+        try{
       var ssName = req.body.ssName;
       var ss = await Spreadsheet.make(ssName, app.locals.store);
       var dbResults = await ss.dump();
@@ -68,6 +69,9 @@ function setupRoutes(app) {
         view['ssNameError'] = "Spreadsheet not found!"
         res.status(NOT_FOUND).send(app.locals.mustache.render('index', view));
       }
+            catch(err){
+                console.log(err);
+            }
     });
     app.get('/ss/ssName', doView(app));
     app.post('/ss/ssName', postView(app));
