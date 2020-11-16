@@ -44,7 +44,7 @@ function setupRoutes(app) {
   app.use(bodyParser.urlencoded({extended: true}));
   
   //@TODO add routes
-    app.get('/index.html', return async function(req, res) {
+    app.get('/index.html',async function(req, res) {
        // var spreadsheetName = trimValues(req.body).ssName;
         var ss_view = {};
         ss_view['ssName'] = 'spreadsheetName';
