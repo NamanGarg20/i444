@@ -30,6 +30,7 @@ export default function serve(port, store) {
   app.locals.store = store;
   app.locals.mustache = new Mustache();
   app.use('/', express.static(STATIC_DIR));
+ // setupTemplates(app);
   setupRoutes(app);
   app.listen(port, function() {
     console.log(`listening on port ${port}`);
@@ -43,13 +44,117 @@ function setupRoutes(app) {
   app.use(bodyParser.urlencoded({extended: true}));
   
   //@TODO add routes
+    app.get('/index.html', doSubmit(app));
+    app.post('/index.html', postSubmit(app));
+    app.get('/spreadsheet.html', doView(app));
+    app.post('/spreadsheet.html', postView(app));
   //must be last
   app.use(do404(app));
   app.use(doErrors(app));
 
 }
 
+function doSumit(app) {
+  return async function(req, res) {
+     // var spreadsheetName = trimValues(req.body).ssName;
+      var ss_view = {};
+      ss_view['ssName'] = 'spreadsheetName';
+      res.status(OK).send(app.locals.mustache.render('index', ss_view));
+      
+  };
+};
+               
+function postSubmit(app){
+   return async function(req, res) {
+       
+       var spreadsheetName = trimValues(req.body).ssName;
+       var ss_view = {};
+       ss_view['ssName'] = spreadsheetName;
+       var errors ={};
+       errors = validateField('ssName', req.body, errors);
+       if(!errors){
+           try{
+       var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
+       var ssDump = await spreadsheet.dump();
+       if(ssDump!==undefined || ssDump.length!==0){
+           res.redirect('ss'+spreadsheetName);
+       }
+           }catch(err){
+               console.error(err);
+           }
+       }
+       if(errors){
+            res.status(NOT_FOUND).send(app.locals.mustache.render('index', ss_view));
+       }
+       
+   };
+};
+
 //@TODO add handlers
+function doView(app){
+    return async function(req, res) {
+        
+        var spreadsheetName = req.params.ssName;
+        var ss_view = {};
+        ss_view['ssName'] = spreadsheetName;
+        
+        var spreadsheet = await spreadsheet.make(spreadsheetName, app.locals.store);
+        var ssDump = await spreadsheet.dump();
+        var ssTable = doTable(ssDump);
+        var ssTableValues = ssTable[1];
+        for(var node of ssDump){
+            var col = node[0].charCodeAt(0)-96;
+            var row = parseInt(node[0].substring[1]);
+            var value = await spreadsheet.query(node[0]).value;
+            ssTableValues[row][col] = value;
+        }
+        ss_view['tableCol'] = ssTable[0];
+        ss_view['tableRow'] = ssTableValues;
+        if(ssDump!==undefined || ssDump.length!==0){
+            res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
+        }
+        else{
+            var index_view ={};
+            index_view['ssName'] = spreadsheetName;
+             res.status(NOT_FOUND).send(app.locals.mustache.render('index', index_view));
+        }
+    };
+};
+
+function postView(app){
+    return async function(req,res){
+        var ss_obj = trimValues(req.body);
+        var spreadsheetName = ss_obj.ssName;
+        var ss_view={};
+        
+        var errors = {};
+        var validError = validateUpdate(ss_obj,req.body);
+        if(!validError){
+            var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
+            const act = ss_obj.ssAct ?? '';
+            switch(act){
+                case 'clear':
+                    await ss.clear();
+                    break;
+                case 'deleteCell':
+                    await ss.delete(ss_obj.cellId);
+                    break;
+                case 'updateCell':
+                    await ss.eval(ss_obj.cellId,ss_obj.formula);
+                    break;
+                case 'copyCell':
+                    await ss.copy(ss_obj.cellId,ss_obj.formula);
+                    break;
+                default:
+                    console.log("Action not selected");
+            }
+            res.redirect('/ss/'+spreadsheetName);
+        }
+        else{
+            res.sendStatus(BAD_REQUEST);
+        }
+    };
+};
 
 /** Default handler for when there is no route for a particular method
  *  and path.
@@ -79,8 +184,42 @@ function doErrors(app) {
 
 const MIN_ROWS = 10;
 const MIN_COLS = 10;
-
+const Str_values = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
 //@TODO add functions to build a spreadsheet view suitable for mustache
+
+function doTable(ssDump){
+    var max_row=MIN_ROWS;
+    var max_col=MIN_COLS;
+    for(var node of ssDump){
+        var col_ref= node[0].charCodeAt(0) - 96;
+        var row_ref = parseInt(node[0].substring(1));
+        if(max_col<col_ref){
+            max_col = col_ref;
+        }
+        if(max_row<row_ref){
+            max_row = row_ref;
+        }
+    }
+    var tableColHeader=[];
+    var tableValues=[];
+    var table[];
+    for(var i=0; i<max_col && max_col<==26;i++){
+        tableColHeader.push(Str_values[i]);
+    }
+    table.push(tableColHeader);
+    for(var i=0;i<max_row;i++){
+        var tableRow =[];
+        tableRow.push(i+1);
+        for(var j=0;j<max_col;j++){
+            tableRow.push("");
+        }
+        tableValues.push(tableRow);
+    }
+    table.push(tableValues);
+    return tableValues;
+    
+    
+}
 
 /**************************** Validation ********************************/
 
@@ -112,6 +251,7 @@ const FIELD_INFOS = {
     friendlyName: 'cell formula',
   },
 };
+
 
 /** return true iff params[name] is valid; if not, add suitable error
  *  message as errors[name].
@@ -218,4 +358,7 @@ function requestUrl(req, index) {
   }
   return url;
 }
+            
+
+
 
