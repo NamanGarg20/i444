@@ -61,7 +61,7 @@ function doSumit(app) {
       ss_view['ssName'] = 'spreadsheetName';
       res.status(OK).send(app.locals.mustache.render('index', ss_view));
       
-  }
+  };
 }
                
 function postSubmit(app){
@@ -88,7 +88,7 @@ function postSubmit(app){
        }
        
    };
-};
+}
 
 //@TODO add handlers
 function doView(app){
@@ -119,7 +119,7 @@ function doView(app){
              res.status(NOT_FOUND).send(app.locals.mustache.render('index', index_view));
         }
     };
-};
+}
 
 function postView(app){
     return async function(req,res){
@@ -154,7 +154,7 @@ function postView(app){
             res.sendStatus(BAD_REQUEST);
         }
     };
-};
+}
 
 /** Default handler for when there is no route for a particular method
  *  and path.
