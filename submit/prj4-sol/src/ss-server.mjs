@@ -158,9 +158,10 @@ function doView(app){
 
 function postView(app){
     return async function(req,res){
+        try{
         console.log(req.params);
         console.log(req.body);
-        var ss_obj = req.body;
+        var ss_obj = req.params;
         var spreadsheetName = ss_obj['ssName'];
         var ss_view={};
         
@@ -189,6 +190,10 @@ function postView(app){
         }
         else{
             res.sendStatus(BAD_REQUEST);
+        }
+        }
+        catch(err){
+            console.log(err);
         }
     };
 }
