@@ -76,7 +76,7 @@ function setupRoutes(app) {
             }
     });
     app.get('/ss/:ssName', doView(app));
-    app.post('/ss/:ssName', postView(app));
+    app.post('/ss/:ssName/spreadsheet.html', postView(app));
   //must be last
   app.use(do404(app));
   app.use(doErrors(app));
