@@ -48,9 +48,9 @@ function setupRoutes(app) {
     app.get('/',async function(req, res) {
        // var spreadsheetName = trimValues(req.body).ssName;
        try{
-        var ss_view = {};
-        ss_view['ssName'] = 'spreadsheetName';
-        res.status(OK).send(app.locals.mustache.render('index', ss_view));
+        var view = {};
+        view['ssName'] = 'spreadsheetName';
+        res.status(OK).send(app.locals.mustache.render('index',  view));
         }
         catch(err){
         	console.log(err);
@@ -85,11 +85,11 @@ function setupRoutes(app) {
 
 
 //@TODO add handlers
+ var ss_view = {};
 function doView(app){
     return async function(req, res) {
         try{
         var spreadsheetName = req.params['ssName'];
-        var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
         var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
         var ssDump = await spreadsheet.dump();
@@ -111,31 +111,7 @@ function doView(app){
             var error  = {};
             var valid = validateUpdate(req.body,error);
             if(!valid) ss_view['formulaError'] = error.formula;
-            if(ss_obj!==undefined){
-        const act = ss_obj.ssAct ?? '';
-            var isChecked = false;
-         switch(act){
-             case '':
-                 ss_view['ssActError'] = 'Action must be specified';
-             case 'clear':
-                 isChecked = true;
-                 break;
-             case 'deleteCell':
-                 isChecked = true;
-                 break;
-             case 'updateCell':
-                isChecked = true;
-                 break;
-             case 'copyCell':
-                 isChecked = true;
-                 break;
-             default:
-                 ss_view['ssActError'] = 'Invalid action ${act}';
-         }
-                if(isChecked){
-                    ss_view['checked'] = 'checked';
-                }
-            }
+            
         
         if(ssDump!== undefined){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
@@ -158,19 +134,29 @@ function postView(app){
         var spreadsheetName = req.params['ssName'];
             var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
             const act = ss_obj.ssAct ?? '';
+            
+            var errors ={};
+            var valid = validateUpdate(ss_obj,errors);
+            console.log(errors);
+            ss_view['ssActError'] = errors.ssAct;
            
             switch(act){
+                    
                 case 'clear':
                     await ss.clear();
+                    ss_view['checked'] = 'checked';
                     break;
                 case 'deleteCell':
                     await ss.delete(ss_obj.cellId);
+                    ss_view['checked'] = 'checked';
                     break;
                 case 'updateCell':
                     await ss.eval(ss_obj.cellId,ss_obj.formula);
+                    ss_view['checked'] = 'checked';
                     break;
                 case 'copyCell':
                     await ss.copy(ss_obj.cellId,ss_obj.formula);
+                    ss_view['checked'] = 'checked';
                     break;
             }
             res.redirect('/ss/'+spreadsheetName);
