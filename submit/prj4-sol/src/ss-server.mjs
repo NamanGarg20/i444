@@ -138,6 +138,7 @@ function doView(app){
         for(var node of ssDump){
             var col = node[0].charCodeAt(0)-96;
             var row = parseInt(node[0].substring[1]);
+            console.log(row);
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row][col] = value;
         }
@@ -162,7 +163,7 @@ function postView(app){
     return async function(req,res){
         try{
         var ss_obj = req.body;
-            var spreadsheetName = req.params['ssName'];
+        var spreadsheetName = req.params['ssName'];
         var ss_view={};
         
         var errors = {};
