@@ -121,7 +121,7 @@ function postSubmit(app){
 //@TODO add handlers
 function doView(app){
     return async function(req, res) {
-        
+        try{
         var spreadsheetName = req.params.ssName;
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
@@ -145,6 +145,9 @@ function doView(app){
             var index_view ={};
             index_view['ssName'] = spreadsheetName;
              res.status(NOT_FOUND).send(app.locals.mustache.render('index', index_view));
+        }
+        }catch(err){
+            console.log(err);
         }
     };
 }
