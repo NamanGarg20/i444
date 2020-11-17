@@ -34,7 +34,7 @@ export default class SSClient {
   async updateCell(ssName, cellId, formula) {
     try {
       
-      var resp = await axios.patch('http://localhost:2345' + BASE + ssName + '/' + cellId, formula);
+        var resp = await axios.patch('http://localhost:2345' + BASE + ssName + '/' + cellId, {formula: formula});
     }
     catch (err) {
       rethrow(err);
