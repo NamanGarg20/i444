@@ -124,9 +124,8 @@ function doView(app){
     return async function(req, res) {
         try{
            // console.log(req.params);
-            console.log(req.body);
+            //console.log(req.body);
         var spreadsheetName = req.params['ssName'];
-            console.log(spreadsheetName);
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
         
@@ -138,7 +137,6 @@ function doView(app){
         for(var node of ssDump){
             var col = node[0].charCodeAt(0)-96;
             var row = parseInt(node[0].substring[1]);
-            console.log(row);
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row][col] = value;
         }
@@ -163,11 +161,12 @@ function postView(app){
     return async function(req,res){
         try{
         var ss_obj = req.body;
+            console.log(ss_obj);
         var spreadsheetName = req.params['ssName'];
         var ss_view={};
         
         var errors = {};
-        var validError = validateUpdate(ss_obj,req.body);
+        var validError = validateUpdate(req.body,errors);
         if(!validError){
             var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
             const act = ss_obj.ssAct ?? '';
