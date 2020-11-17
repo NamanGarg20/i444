@@ -60,10 +60,9 @@ function setupRoutes(app) {
         try{
       var ssName = req.body['ssName'];
       var ss = await Spreadsheet.make(ssName, app.locals.store);
-      var dbResults = await ss.dump();
-            res.redirect('/ss/'+ssName);
-      if (dbResults!==undefined) {
-        
+      var ssDump = await spreadsheet.dump();
+      if(ssDump!==undefined || ssDump.length!==0){
+          res.redirect('/ss/'+spreadsheetName);
       }
       else {
         var view = {};
@@ -230,7 +229,7 @@ function doTable(ssDump){
     var max_row=MIN_ROWS;
     var max_col=MIN_COLS;
     for(var node of ssDump){
-        var col_ref= node[0].charCodeAt(0) - 96;
+        var col_ref = node[0].charCodeAt(0) - 96;
         var row_ref = parseInt(node[0].substring(1));
         if(max_col<col_ref){
             max_col = col_ref;
