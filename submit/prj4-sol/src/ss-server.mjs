@@ -102,18 +102,28 @@ function doView(app){
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row-1][col] = value;
         }
+            var ss_obj = req.body;
+            console.log(ss_obj);
             
+            var errors = {};
+            var valid = validateUpdate(ss_obj, errors);
+            console.log(errors);
+            if(!valid){
+                ss_view[ssActError] = errors.ssAct;
+                ss_view[formulaError] = errors.formula;
+            }
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
-        }catch(err){
-            ss_view['error'] = AppError(err);
-        }
+        
         if(ssDump.length!== undefined){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
         }
         else{
             ss_view['ssNameError'] = "Spreadsheet Name Error";
              res.status(NOT_FOUND).send(app.locals.mustache.render('index', ss_view));
+        }
+        }catch(err){
+            console.log(err);
         }
         
     };
