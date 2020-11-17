@@ -111,6 +111,7 @@ function doView(app){
             
                 ss_view['ssActError'] = errors.ssAct;
                 ss_view['formulaError'] = errors.formula;
+            ss_view['errors'] = errors;
             
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
