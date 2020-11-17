@@ -91,11 +91,6 @@ function doView(app){
         var spreadsheetName = req.params['ssName'];
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
-            var ss_obj = trimValues(req.body);
-        var errors={};
-            var valid = validateUpdate(req.body,errors);
-           
-            
         var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
         var ssDump = await spreadsheet.dump();
         var ssTable = doTable(ssDump);
@@ -107,13 +102,12 @@ function doView(app){
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row-1][col] = value;
         }
-            if(ss_obj.cellId===undefined){
-                ss_view['cellIdError'] = "Enter cell Id in the tesxt";
-            }
-         ss_view['formulaError'] = errors.formula;
             
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
+        }catch(err){
+            ss_view['error'] = AppError(err);
+        }
         if(ssDump.length!== undefined){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
         }
@@ -121,9 +115,7 @@ function doView(app){
             ss_view['ssNameError'] = "Spreadsheet Name Error";
              res.status(NOT_FOUND).send(app.locals.mustache.render('index', ss_view));
         }
-        }catch(err){
-            console.log(err);
-        }
+        
     };
 }
 

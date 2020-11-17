@@ -33,9 +33,8 @@ export default class SSClient {
     /** Update cellId for spreadsheet ssName to contain formula */
   async updateCell(ssName, cellId, formula) {
     try {
-      var body = {};
-      body['formula'] = formula;
-      var resp = await axios.patch('http://localhost:2345/api/store/' + ssName + '/' + cellId, body);
+      
+      var resp = await axios.patch('http://localhost:2345' + BASE + ssName + '/' + cellId, formula);
     }
     catch (err) {
       rethrow(err);
