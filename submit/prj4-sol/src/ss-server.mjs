@@ -90,7 +90,7 @@ function doView(app){
         var spreadsheetName = req.params['ssName'];
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
-            var ss_obj = req.body;
+            var ss_obj = trimValues(req.body);
         var errors={};
             var valid = validateUpdate(req.body,errors);
             var errors={};
@@ -112,7 +112,7 @@ function doView(app){
             
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
-            if(ssDump.length!== undefined){
+        if(ssDump.length!== undefined){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
         }
         else{
@@ -128,15 +128,12 @@ function doView(app){
 function postView(app){
     return async function(req,res){
         try{
-        var ss_obj = req.body;
+        var ss_obj = trimValues(req.body);
         var spreadsheetName = req.params['ssName'];
             var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
             const act = ss_obj.ssAct ?? '';
            
             switch(act){
-                case '':
-                    ss_view['ssActError'] = "Action must be selected";
-                    break;
                 case 'clear':
                     await ss.clear();
                     break;
@@ -149,8 +146,6 @@ function postView(app){
                 case 'copyCell':
                     await ss.copy(ss_obj.cellId,ss_obj.formula);
                     break;
-                default:
-                    ss_view[cellIdError] = "cell";
             }
             res.redirect('/ss/'+spreadsheetName);
 
