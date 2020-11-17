@@ -76,7 +76,7 @@ function setupRoutes(app) {
             }
     });
     app.get('/ss/:ssName', doView(app));
-    app.post('/ss/:ssName/spreadsheet.html', postView(app));
+    app.post('/ss/:ssName', postView(app));
   //must be last
   app.use(do404(app));
   app.use(doErrors(app));
@@ -156,7 +156,7 @@ function doView(app){
 
 function postView(app){
     return async function(req,res){
-        var ss_obj = trimValues(req.body);
+        var ss_obj = req.body;
         var spreadsheetName = ss_obj['ssName'];
         var ss_view={};
         
