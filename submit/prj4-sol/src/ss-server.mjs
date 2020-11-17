@@ -124,8 +124,8 @@ function doView(app){
     return async function(req, res) {
         try{
             console.log(req.params);
-            console.log(req.body);
-        var spreadsheetName = req.body['ssName'];
+            //console.log(req.body);
+        var spreadsheetName = req.params['ssName'];
             console.log(spreadsheetName);
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
@@ -159,6 +159,7 @@ function doView(app){
 function postView(app){
     return async function(req,res){
         console.log(req.params);
+        console.log(req.body);
         var ss_obj = req.body;
         var spreadsheetName = ss_obj['ssName'];
         var ss_view={};
