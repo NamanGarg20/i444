@@ -123,7 +123,7 @@ function postSubmit(app){
 function doView(app){
     return async function(req, res) {
         try{
-            console.log(req.params);
+           // console.log(req.params);
             console.log(req.body);
         var spreadsheetName = req.params['ssName'];
             console.log(spreadsheetName);
@@ -163,8 +163,8 @@ function doView(app){
 function postView(app){
     return async function(req,res){
         try{
-        var ss_obj = req.params;
-        var spreadsheetName = ss_obj['ssName'];
+        var ss_obj = req.body;
+            var spreadsheetName = req.params['ssName'];
         var ss_view={};
         
         var errors = {};
