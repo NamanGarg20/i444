@@ -45,7 +45,7 @@ function setupRoutes(app) {
   
   //@TODO add routes
     //app.get('/', doView(app));
-    app.get('/index.html',async function(req, res) {
+    app.get('/',async function(req, res) {
        // var spreadsheetName = trimValues(req.body).ssName;
        try{
         var ss_view = {};
@@ -56,7 +56,7 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/index.html', async function (req, res, next) {
+    app.post('/', async function (req, res, next) {
         try{
       var ssName = req.body['ssName'];
       var ss = await Spreadsheet.make(ssName, app.locals.store);
