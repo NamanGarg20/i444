@@ -131,7 +131,7 @@ function postView(app){
             var errors ={};
             var valid = validateUpdate(ss_obj,errors);
             //console.log(errors);
-            if(valid){
+          
             ss_view['ssActError'] = errors.ssAct;
             ss_view['cellIdError'] = errors.cellId;
             ss_view['formulaError'] = errors.formula;
@@ -156,7 +156,7 @@ function postView(app){
                     break;
             }
             res.redirect('/ss/'+spreadsheetName);
-            }
+            
         }
         catch(err){
             console.log(err);
