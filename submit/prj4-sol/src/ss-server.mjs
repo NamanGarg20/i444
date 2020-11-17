@@ -108,10 +108,10 @@ function doView(app){
             var errors = {};
             var valid = validateUpdate(ss_obj, errors);
             console.log(errors);
-            if(!valid){
+            
                 ss_view[ssActError] = errors.ssAct;
                 ss_view[formulaError] = errors.formula;
-            }
+            
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
         

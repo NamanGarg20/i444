@@ -24,7 +24,7 @@
           {{/tableRow}}
         </table>
        
-       <span class="error" id="error">{{error}}</span>
+       
         
         <form action="/ss/{{ssName}}" method="POST">
           <label for="ssAct">Action</label>
