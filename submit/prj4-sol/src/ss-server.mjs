@@ -136,7 +136,9 @@ function doView(app){
         var ssTableValues = ssTable[1];
         for(var node of ssDump){
             var col = node[0].charCodeAt(0)-96;
-            var row = parseInt(node[0].substring[1]);
+            console.log(node[0]);
+            console.log(node[0].substring(1));
+            var row = parseInt(node[0].substring(1));
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row][col] = value;
         }
