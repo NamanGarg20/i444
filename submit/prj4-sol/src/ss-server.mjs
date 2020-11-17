@@ -162,6 +162,7 @@ function postView(app){
         var ss_obj = req.body;
         var spreadsheetName = req.params['ssName'];
             var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
+            var ss_view={}
             const act = ss_obj.ssAct ?? '';
             var errors={};
             var valid = validateUpdate(ss_obj,errors);
