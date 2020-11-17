@@ -33,19 +33,19 @@
           <span>
               <fieldset>
               <div>
-                  <input name="ssAct" type="radio" id="actClear" value="clear" checked="{{clear_checked}}">
+                  <input name="ssAct" type="radio" id="actClear" value="clear" {{clear_checked}}>
                   <label for="actClear">Clear Spreadsheet</label>
               </div>
               <div>
-                <input name="ssAct" type="radio" id="actDelete" value="deleteCell" checked="{{delete_checked}}">
+                <input name="ssAct" type="radio" id="actDelete" value="deleteCell" {{delete_checked}}>
                   <label for="act">Delete Cell</label>
               </div>
               <div>
-                  <input name="ssAct" type="radio" id="actUpdate" value="updateCell" checked="{{update_checked}}">
+                  <input name="ssAct" type="radio" id="actUpdate" value="updateCell" {{update_checked}}>
                   <label for="actUpdate">Update Cell</label>
               </div>
               <div>
-                  <input name="ssAct" type="radio" id="actCopy" value="copyCell" checked="{{copy_checked}}">
+                  <input name="ssAct" type="radio" id="actCopy" value="copyCell" {{copy_checked}}>
                   <label for="actCopy">Copy Cell</label>
               </div>
               </fieldset>
