@@ -138,14 +138,14 @@ function doView(app){
         }
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
-            if(ssDump.length){
+            //if(ssDump.length){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
-        }
-        else{
-            var index_view ={};
-            index_view['ssName'] = spreadsheetName;
-             res.status(NOT_FOUND).send(app.locals.mustache.render('index', index_view));
-        }
+//        }
+//        else{
+//            var index_view ={};
+//            index_view['ssName'] = spreadsheetName;
+//             res.status(NOT_FOUND).send(app.locals.mustache.render('index', index_view));
+//        }
         }catch(err){
             console.log(err);
         }
