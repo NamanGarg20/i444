@@ -15,9 +15,11 @@
           <th>{{.}}</th>
           {{/tableCol}}
           
-          </tr>{{#tableRow}}
-          <tr>
-          <td>{{.}}</td>
+          </tr>
+          {{#tableRow}}
+          <tr>{{#.}}
+          <th>{{.}}</th>
+          {{/.}}
           </tr>
           {{/tableRow}}
         </table>
