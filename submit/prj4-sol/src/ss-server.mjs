@@ -45,7 +45,7 @@ function setupRoutes(app) {
   
   //@TODO add routes
     //app.get('/', doView(app));
-    app.get('/',async function(req, res) {
+    app.get('/index.html',async function(req, res) {
        // var spreadsheetName = trimValues(req.body).ssName;
        try{
         var ss_view = {};
@@ -56,13 +56,14 @@ function setupRoutes(app) {
         	console.log(err);
         }
     });
-    app.post('/', async function (req, res, next) {
+    app.post('/index.html', async function (req, res, next) {
         try{
       var ssName = req.query.ssName;
       var ss = await Spreadsheet.make(ssName, app.locals.store);
       var dbResults = await ss.dump();
+            res.redirect('/ss/'+ssName);
       if (dbResults!==undefined) {
-        res.redirect('/ss/'+ssName);
+        
       }
       else {
         var view = {};
