@@ -59,7 +59,7 @@ function setupRoutes(app) {
     app.post('/index.html', async function (req, res, next) {
         try{
       var ssName = req.body['ssName'];
-      var ss = await Spreadsheet.make(ssName, app.locals.store);
+      var spreadsheet  = await Spreadsheet.make(ssName, app.locals.store);
       var ssDump = await spreadsheet.dump();
       if(ssDump!==undefined || ssDump.length!==0){
           res.redirect('/ss/'+spreadsheetName);
@@ -82,41 +82,6 @@ function setupRoutes(app) {
 
 }
 
-function doSumit(app) {
-  return async function(req, res) {
-     // var spreadsheetName = trimValues(req.body).ssName;
-      var ss_view = {};
-      ss_view['ssName'] = 'spreadsheetName';
-      res.status(OK).send(app.locals.mustache.render('index', ss_view));
-      
-  };
-}
-               
-function postSubmit(app){
-   return async function(req, res) {
-       try{
-       var spreadsheetName = trimValues(req.params).ssName;
-       var ss_view = {};
-       ss_view['ssName'] = spreadsheetName;
-       var errors ={};
-       errors = validateField('ssName', req.body, errors);
-       if(!errors){
-           
-       var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
-       var ssDump = await spreadsheet.dump();
-       if(ssDump!==undefined || ssDump.length!==0){
-           res.redirect('/ss/'+spreadsheetName);
-       }
-           
-       }
-       if(errors){
-            res.status(NOT_FOUND).send(app.locals.mustache.render('index', ss_view));
-       }
-       }catch(err){
-           console.error(err);
-       }
-   };
-}
 
 //@TODO add handlers
 function doView(app){
@@ -127,7 +92,11 @@ function doView(app){
         ss_view['ssName'] = spreadsheetName;
         var errors={};
             var valid = validateUpdate(req.body,errors);
-                   ss_view['errors'] = errors;
+            var errors={};
+            var valid = validateUpdate(ss_obj,errors);
+            
+            ss_view['formulaError'] = errors.formula;
+            
         var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
         var ssDump = await spreadsheet.dump();
         var ssTable = doTable(ssDump);
@@ -161,11 +130,8 @@ function postView(app){
         var ss_obj = req.body;
         var spreadsheetName = req.params['ssName'];
             var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
-            var ss_view={}
             const act = ss_obj.ssAct ?? '';
-            var errors={};
-            var valid = validateUpdate(ss_obj,errors);
-            ss_view['errors'] = errors;
+           
             switch(act){
                 case '':
                     ss_view['ssActError'] = "Action must be selected";
@@ -222,7 +188,7 @@ function doErrors(app) {
 
 const MIN_ROWS = 10;
 const MIN_COLS = 10;
-const Str_values = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+const Str_values = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"];
 //@TODO add functions to build a spreadsheet view suitable for mustache
 
 function doTable(ssDump){
@@ -231,10 +197,10 @@ function doTable(ssDump){
     for(var node of ssDump){
         var col_ref = node[0].charCodeAt(0) - 96;
         var row_ref = parseInt(node[0].substring(1));
-        if(max_col<col_ref){
+        if(col_ref>max_col){
             max_col = col_ref;
         }
-        if(max_row<row_ref){
+        if(row_ref>max_row){
             max_row = row_ref;
         }
     }
