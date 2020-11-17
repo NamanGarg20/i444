@@ -139,7 +139,9 @@ function doView(app){
             var row = parseInt(node[0].substring[1]);
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row][col] = value;
+            console.log(value);
         }
+            
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
             //if(ssDump.length){
@@ -159,8 +161,6 @@ function doView(app){
 function postView(app){
     return async function(req,res){
         try{
-        console.log(req.params);
-        console.log(req.body);
         var ss_obj = req.params;
         var spreadsheetName = ss_obj['ssName'];
         var ss_view={};
