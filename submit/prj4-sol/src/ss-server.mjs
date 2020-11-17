@@ -170,7 +170,7 @@ function postView(app){
         
         var errors = {};
         var validError = validateUpdate(req.body,errors);
-        if(!validError){
+        //if(!validError){
             var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
             const act = ss_obj.ssAct ?? '';
             switch(act){
@@ -190,10 +190,10 @@ function postView(app){
                     console.log("Action not selected");
             }
             res.redirect('/ss/'+spreadsheetName);
-        }
-        else{
-            res.sendStatus(BAD_REQUEST);
-        }
+//        }
+//        else{
+//            res.sendStatus(BAD_REQUEST);
+//        }
         }
         catch(err){
             console.log(err);
