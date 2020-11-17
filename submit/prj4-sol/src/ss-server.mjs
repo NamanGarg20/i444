@@ -185,7 +185,6 @@ function postView(app){
                 default:
                     ss_view[cellIdError] = "cell";
             }
-        }
             res.redirect('/ss/'+spreadsheetName);
 
         }
