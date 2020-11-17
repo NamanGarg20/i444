@@ -156,7 +156,7 @@ function postView(app){
                     break;
                 case 'copyCell':
                     await ss.copy(ss_obj.cellId,ss_obj.formula);
-                    ss_view['checked'] = 'checked';
+                    //ss_view['checked'] = 'checked';
                     break;
             }
             res.redirect('/ss/'+spreadsheetName);
