@@ -126,7 +126,7 @@ function doView(app){
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
         
-        var spreadsheet = await spreadsheet.make(spreadsheetName, app.locals.store);
+        var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
         var ssDump = await spreadsheet.dump();
         var ssTable = doTable(ssDump);
         var ssTableValues = ssTable[1];
