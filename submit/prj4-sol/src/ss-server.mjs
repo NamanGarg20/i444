@@ -123,7 +123,8 @@ function postSubmit(app){
 function doView(app){
     return async function(req, res) {
         try{
-        var spreadsheetName = req.params.ssName;
+            console.log(req.params);
+        var spreadsheetName = req.body['ssName'];
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
         
