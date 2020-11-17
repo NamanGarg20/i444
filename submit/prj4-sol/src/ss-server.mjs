@@ -144,19 +144,19 @@ function postView(app){
             switch(act){
                 case 'clear':
                     await ss.clear();
-                    ss_view['checked'] = 'checked';
+                    ss_view['clear_checked'] = 'checked';
                     break;
                 case 'deleteCell':
                     await ss.delete(ss_obj.cellId);
-                    ss_view['checked'] = 'checked';
+                    ss_view['delete_checked'] = 'checked';
                     break;
                 case 'updateCell':
                     await ss.eval(ss_obj.cellId,ss_obj.formula);
-                    ss_view['checked'] = 'checked';
+                    ss_view['update_checked'] = 'checked';
                     break;
                 case 'copyCell':
                     await ss.copy(ss_obj.cellId,ss_obj.formula);
-                    //ss_view['checked'] = 'checked';
+                    ss_view['copy_checked'] = 'checked';
                     break;
             }
             res.redirect('/ss/'+spreadsheetName);
