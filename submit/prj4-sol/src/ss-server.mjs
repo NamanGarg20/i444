@@ -58,10 +58,11 @@ function setupRoutes(app) {
     });
     app.post('/index.html', async function (req, res, next) {
         try{
-      var ssName = req.body['ssName'];
+            var ss_obj = trimValues(req.body);
+      var ssName = ss_obj['ssName'];
       var spreadsheet  = await Spreadsheet.make(ssName, app.locals.store);
       var ssDump = await spreadsheet.dump();
-      if(ssDump!==undefined || ssDump.length!==0){
+      if(ssDump!==undefined ){
           res.redirect('/ss/'+spreadsheetName);
       }
       else {
@@ -93,10 +94,7 @@ function doView(app){
             var ss_obj = trimValues(req.body);
         var errors={};
             var valid = validateUpdate(req.body,errors);
-            var errors={};
-            var valid = validateUpdate(ss_obj,errors);
-            
-            ss_view['formulaError'] = errors.formula;
+           
             
         var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
         var ssDump = await spreadsheet.dump();
@@ -109,6 +107,10 @@ function doView(app){
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row-1][col] = value;
         }
+            if(ss_obj.cellId===undefined){
+                ss_view['cellIdError'] = "Enter cell Id in the tesxt";
+            }
+         ss_view['formulaError'] = errors.formula;
             
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
