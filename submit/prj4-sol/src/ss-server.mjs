@@ -90,6 +90,7 @@ function doView(app){
         var spreadsheetName = req.params['ssName'];
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
+            var ss_obj = req.body;
         var errors={};
             var valid = validateUpdate(req.body,errors);
             var errors={};
