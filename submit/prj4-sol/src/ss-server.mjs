@@ -110,7 +110,7 @@ function doView(app){
             
             var error  = {};
             var valid = validateUpdate(req.body,error);
-            if(!valid) ss_view[formulaError] = error.formula;
+            if(!valid) ss_view['formulaError'] = error.formula;
             if(ss_obj!==undefined){
         const act = ss_obj.ssAct ?? '';
             var isChecked = false;
