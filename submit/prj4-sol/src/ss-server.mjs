@@ -49,7 +49,7 @@ function setupRoutes(app) {
        // var spreadsheetName = trimValues(req.body).ssName;
        try{
         var view = {};
-        view['ssName'] = 'spreadsheetName';
+        view['ssName'] = '';
         res.status(OK).send(app.locals.mustache.render('index',  view));
         }
         catch(err){
@@ -63,7 +63,7 @@ function setupRoutes(app) {
       var spreadsheet  = await Spreadsheet.make(ssName, app.locals.store);
       var ssDump = await spreadsheet.dump();
       if(ssDump!==undefined ){
-          res.redirect('/ss/'+spreadsheetName);
+          res.redirect('/ss/'+ssName);
       }
       else {
         var view = {};
