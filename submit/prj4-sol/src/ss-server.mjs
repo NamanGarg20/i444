@@ -105,11 +105,6 @@ function doView(app){
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
           
-            var ss_obj = req.body;
-            console.log(req.body);
-            
-            ss_view['formulaError'] = error.formula;
-            
         
         if(ssDump!== undefined){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
