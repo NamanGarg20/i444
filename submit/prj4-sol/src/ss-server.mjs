@@ -163,7 +163,7 @@ function postView(app){
 
         }
         catch(err){
-            console.log(err);
+            //console.log(err);
         }
     };
 }
