@@ -58,7 +58,7 @@ function setupRoutes(app) {
     });
     app.post('/index.html', async function (req, res, next) {
         try{
-      var ssName = req.query.ssName;
+      var ssName = req.body['ssName'];
       var ss = await Spreadsheet.make(ssName, app.locals.store);
       var dbResults = await ss.dump();
             res.redirect('/ss/'+ssName);
