@@ -108,9 +108,7 @@ function doView(app){
             var ss_obj = req.body;
             console.log(req.body);
             
-            var error  = {};
-            var valid = validateUpdate(req.body,error);
-            if(!valid) ss_view['formulaError'] = error.formula;
+            ss_view['formulaError'] = error.formula;
             
         
         if(ssDump!== undefined){
@@ -137,18 +135,21 @@ function postView(app){
             
             var errors ={};
             var valid = validateUpdate(ss_obj,errors);
-            console.log(errors);
+            //console.log(errors);
+            if(!valid){
             ss_view['ssActError'] = errors.ssAct;
             ss_view['cellIdError'] = errors.cellId;
             ss_view['formulaError'] = errors.formula;
+            
+            
             switch(act){
                 case 'clear':
                     await ss.clear();
-                    ss_view['clear_checked'] = 'checked';
+                    ss_view['clear_checked'] = '';
                     break;
                 case 'deleteCell':
                     await ss.delete(ss_obj.cellId);
-                    ss_view['delete_checked'] = 'checked';
+                    ss_view['delete_checked'] = '';
                     break;
                 case 'updateCell':
                     await ss.eval(ss_obj.cellId,ss_obj.formula);
@@ -156,14 +157,14 @@ function postView(app){
                     break;
                 case 'copyCell':
                     await ss.copy(ss_obj.cellId,ss_obj.formula);
-                    ss_view['copy_checked'] = 'checked';
+                    ss_view['copy_checked'] = '';
                     break;
             }
             res.redirect('/ss/'+spreadsheetName);
-
+            }
         }
         catch(err){
-            //console.log(err);
+            console.log(err);
         }
     };
 }
