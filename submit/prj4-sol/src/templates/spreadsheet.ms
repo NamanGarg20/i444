@@ -24,6 +24,7 @@
           {{/tableRow}}
         </table>
        
+       <span class="error" id="error">{{error}}</span>
         
         <form action="/ss/{{ssName}}" method="POST">
           <label for="ssAct">Action</label>
@@ -53,7 +54,7 @@
           <span>
               <input name="cellId" value="" id="cellId">
               <br>
-              <span class="error" id="cellIdError"></span>
+              <span class="error" id="cellIdError">{{cellIdError}}</span>
           </span>
             <label for="formula">Formula</label>
             <span>
