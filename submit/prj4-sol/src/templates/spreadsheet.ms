@@ -19,7 +19,7 @@
           <tr>
           <td>{{.}}</td>
           </tr>
-          {{/#tableRow}}
+          {{/tableRow}}
         </table>
        
         

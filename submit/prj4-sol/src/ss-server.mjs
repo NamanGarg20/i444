@@ -138,7 +138,7 @@ function doView(app){
         }
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
-        if(ssDump!==undefined || ssDump.length!==0){
+            if(ssDump.length){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
         }
         else{
