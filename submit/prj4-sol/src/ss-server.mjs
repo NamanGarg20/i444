@@ -75,8 +75,8 @@ function setupRoutes(app) {
                 console.log(err);
             }
     });
-    app.get('/ss/ssName', doView(app));
-    app.post('/ss/ssName', postView(app));
+    app.get('/ss/:ssName', doView(app));
+    app.post('/ss/:ssName', postView(app));
   //must be last
   app.use(do404(app));
   app.use(doErrors(app));
