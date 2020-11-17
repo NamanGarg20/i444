@@ -96,7 +96,7 @@ function doSumit(app) {
 function postSubmit(app){
    return async function(req, res) {
        try{
-       var spreadsheetName = trimValues(req.body).ssName;
+       var spreadsheetName = trimValues(req.params).ssName;
        var ss_view = {};
        ss_view['ssName'] = spreadsheetName;
        var errors ={};
@@ -156,6 +156,7 @@ function doView(app){
 
 function postView(app){
     return async function(req,res){
+        console.log(req.body);
         var ss_obj = req.body;
         var spreadsheetName = ss_obj['ssName'];
         var ss_view={};
