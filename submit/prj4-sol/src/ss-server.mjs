@@ -139,9 +139,9 @@ function postView(app){
             var valid = validateUpdate(ss_obj,errors);
             console.log(errors);
             ss_view['ssActError'] = errors.ssAct;
-           
+            ss_view['cellIdError'] = errors.cellId;
+            ss_view['formulaError'] = errors.formula;
             switch(act){
-                    
                 case 'clear':
                     await ss.clear();
                     ss_view['checked'] = 'checked';
