@@ -18,6 +18,7 @@ import axios from 'axios';
 
 const BASE = '/api/store/';
 
+const url = 'http://localhost:2345';
 
 export default class SSClient {
 
@@ -34,7 +35,7 @@ export default class SSClient {
   async updateCell(ssName, cellId, formula) {
     try {
       
-        var resp = await axios.patch('http://localhost:2345' + BASE + ssName + '/' + cellId, {formula: formula});
+        var resp = await axios.patch(url + BASE + ssName + '/' + cellId, {formula: formula});
     }
     catch (err) {
       rethrow(err);
@@ -45,7 +46,7 @@ export default class SSClient {
   /** Clear contents of spreadsheet ssName */
   async clear(ssName) {
     try {
-      var resp = await axios.delete('http://localhost:2345/api/store/' + ssName);
+      var resp = await axios.delete(url + BASE  + ssName);
     }
     catch (err) {
       rethrow(err);
@@ -56,7 +57,7 @@ export default class SSClient {
   /** Delete all info for cellId from spreadsheet ssName. */
   async delete(ssName, cellId) {
     try {
-      var resp = await axios.delete('http://localhost:2345/api/store/' + ssName + '/' + cellId);
+      var resp = await axios.delete(url + BASE  + ssName + '/' + cellId);
     }
     catch (err) {
       rethrow(err);
@@ -66,7 +67,7 @@ export default class SSClient {
   /** Return list of pairs of cellId, formula for spreadsheet ssName */
   async readFormulas(ssName) {
     try {
-      var resp = await axios.get('http://localhost:2345/api/store/' + ssName)
+      var resp = await axios.get(url + BASE  + ssName)
       return resp.data;
     }
     catch (err) {
