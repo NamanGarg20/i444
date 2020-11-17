@@ -47,7 +47,7 @@
               </div>
               </fieldset>
               <br>
-              <span class="error" id="ssActError"></span>
+              <span class="error" id="ssActError">{{ssActError}}</span>
           </span>
           <label for="cellId">Destination Cell ID</label>
           <span>
@@ -59,7 +59,7 @@
             <span>
               <input name="formula" value="" id="formula">
               <br>
-              <span class="error" id="formulaError"></span>
+              <span class="error" id="formulaError">{{formulaError}}</span>
           </span>
             <label>&nbsp;</label>
             <input type="submit" value="Update">

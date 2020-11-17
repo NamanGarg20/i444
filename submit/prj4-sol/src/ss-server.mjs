@@ -123,37 +123,33 @@ function postSubmit(app){
 function doView(app){
     return async function(req, res) {
         try{
-           // console.log(req.params);
-            //console.log(req.body);
         var spreadsheetName = req.params['ssName'];
         var ss_view = {};
         ss_view['ssName'] = spreadsheetName;
-        
+        var errors={};
+            var valid = validateUpdate(req.body,errors);
+                   ss_view['errors'] = errors;
         var spreadsheet = await Spreadsheet.make(spreadsheetName, app.locals.store);
         var ssDump = await spreadsheet.dump();
         var ssTable = doTable(ssDump);
-            console.log(ssDump);
+           
         var ssTableValues = ssTable[1];
         for(var node of ssDump){
             var col = node[0].charCodeAt(0)-96;
-            console.log("columns: "+col);
-            console.log("row: "+node[0].substring(1));
             var row = parseInt(node[0].substring(1));
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row-1][col] = value;
-            console.log(value);
         }
             
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
-            //if(ssDump.length){
+            if(ssDump.length!== undefined){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
-//        }
-//        else{
-//            var index_view ={};
-//            index_view['ssName'] = spreadsheetName;
-//             res.status(NOT_FOUND).send(app.locals.mustache.render('index', index_view));
-//        }
+        }
+        else{
+            ss_view['ssNameError'] = "Spreadsheet Name Error";
+             res.status(NOT_FOUND).send(app.locals.mustache.render('index', ss_view));
+        }
         }catch(err){
             console.log(err);
         }
@@ -164,16 +160,16 @@ function postView(app){
     return async function(req,res){
         try{
         var ss_obj = req.body;
-            console.log(ss_obj);
         var spreadsheetName = req.params['ssName'];
-        var ss_view={};
-        
-        var errors = {};
-        var validError = validateUpdate(req.body,errors);
-        //if(!validError){
             var ss = await Spreadsheet.make(spreadsheetName, app.locals.store);
             const act = ss_obj.ssAct ?? '';
+            var errors={};
+            var valid = validateUpdate(ss_obj,errors);
+            ss_view['errors'] = errors;
             switch(act){
+                case '':
+                    ss_view['ssActError'] = "Action must be selected";
+                    break;
                 case 'clear':
                     await ss.clear();
                     break;
@@ -187,13 +183,11 @@ function postView(app){
                     await ss.copy(ss_obj.cellId,ss_obj.formula);
                     break;
                 default:
-                    console.log("Action not selected");
+                    ss_view[cellIdError] = "cell";
             }
+        }
             res.redirect('/ss/'+spreadsheetName);
-//        }
-//        else{
-//            res.sendStatus(BAD_REQUEST);
-//        }
+
         }
         catch(err){
             console.log(err);
