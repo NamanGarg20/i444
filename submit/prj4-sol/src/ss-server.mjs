@@ -102,21 +102,42 @@ function doView(app){
             var value = await spreadsheet.query(node[0]).value;
             ssTableValues[row-1][col] = value;
         }
-            var ss_obj = req.body;
-            console.log(ss_obj);
-            
-            var errors = {};
-            var valid = validateUpdate(ss_obj, errors);
-            console.log(errors);
-            
-                ss_view['ssActError'] = errors.ssAct;
-                ss_view['formulaError'] = errors.formula;
-            ss_view['errors'] = errors;
-            
         ss_view['tableCol'] = ssTable[0];
         ss_view['tableRow'] = ssTableValues;
+          
+            var ss_obj = req.body;
+            console.log(req.body);
+            
+            var error  = {};
+            var valid = validateUpdate(req.body,error);
+            if(!valid) ss_view[formulaError] = error.formula;
+            if(ss_obj!==undefined){
+        const act = ss_obj.ssAct ?? '';
+            var isChecked = false;
+         switch(act){
+             case '':
+                 ss_view['ssActError'] = 'Action must be specified';
+             case 'clear':
+                 isChecked = true;
+                 break;
+             case 'deleteCell':
+                 isChecked = true;
+                 break;
+             case 'updateCell':
+                isChecked = true;
+                 break;
+             case 'copyCell':
+                 isChecked = true;
+                 break;
+             default:
+                 ss_view['ssActError'] = 'Invalid action ${act}';
+         }
+                if(isChecked){
+                    ss_view['checked'] = 'checked';
+                }
+            }
         
-        if(ssDump.length!== undefined){
+        if(ssDump!== undefined){
             res.status(OK).send(app.locals.mustache.render('spreadsheet', ss_view));
         }
         else{
