@@ -157,7 +157,7 @@ function doView(app){
 function postView(app){
     return async function(req,res){
         var ss_obj = trimValues(req.body);
-        var spreadsheetName = ss_obj.ssName;
+        var spreadsheetName = ss_obj['ssName'];
         var ss_view={};
         
         var errors = {};
