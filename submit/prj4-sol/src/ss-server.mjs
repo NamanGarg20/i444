@@ -131,7 +131,7 @@ function postView(app){
             var errors ={};
             var valid = validateUpdate(ss_obj,errors);
             //console.log(errors);
-            if(!valid){
+            if(valid){
             ss_view['ssActError'] = errors.ssAct;
             ss_view['cellIdError'] = errors.cellId;
             ss_view['formulaError'] = errors.formula;
